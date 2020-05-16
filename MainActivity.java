@@ -82,6 +82,8 @@ public class MainActivity extends AppCompatActivity implements MapView.MapViewEv
 
     private static final int GPS_ENABLE_REQUEST_CODE = 2001;
     private static final int PERMISSIONS_REQUEST_CODE = 100;
+    public static final int REQUEST_CODE_FILTER = 1001;
+
     String[] REQUIRED_PERMISSIONS  = {Manifest.permission.ACCESS_FINE_LOCATION};
 
 
@@ -207,6 +209,24 @@ public class MainActivity extends AppCompatActivity implements MapView.MapViewEv
                 textView.setText(getNearLocName());
             }
         });
+
+        //  20.05.16 소스 추가
+        Button b_filter_button = (Button) findViewById(R.id.filter_button);
+        b_filter_button.setOnClickListener(new Button.OnClickListener() {
+            public void onClick(View v) {
+                Intent filter_intent = new Intent(getApplicationContext(), set_filter.class);
+                startActivityForResult(filter_intent, REQUEST_CODE_FILTER);
+            }
+        });
+
+        Button text_list_button = (Button) findViewById(R.id.text_list_button);
+        text_list_button.setOnClickListener(new Button.OnClickListener() {
+            public void onClick(View v) {
+                Intent message_intent = new Intent(getApplicationContext(), message_list.class);
+                startActivityForResult(message_intent, REQUEST_CODE_FILTER);
+            }
+        });
+        //  20.05.16 소스 추가 끝
 
         ImageButton cp_button = (ImageButton)findViewById(R.id.cp_button);
         cp_button.setOnClickListener(new View.OnClickListener() {
