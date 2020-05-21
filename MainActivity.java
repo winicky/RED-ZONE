@@ -51,7 +51,7 @@ class LocationInfo {
     double latitude;
     double longitude;
     String locationCode;
-    int infoCOunt;
+    int infoCount;
     int warningCount;
 }
 
@@ -66,8 +66,8 @@ public class MainActivity extends AppCompatActivity implements MapView.MapViewEv
     private int count;
     private int mode = 0; // 0 = zoom level 0~8, 1 = zoom level 9~
 
-    private static final int numLocParent = 17;
-    private static final int numLocChild = 228;
+    public static final int numLocParent = 17;
+    public static final int numLocChild = 229;
 
 
     private JSONObject mapInfo = new JSONObject();
@@ -75,8 +75,8 @@ public class MainActivity extends AppCompatActivity implements MapView.MapViewEv
     private String[] disasterType = new String[15];
     private String[] warningLevel = new String[3];
 
-    private LocationInfo[] locParent = new LocationInfo[numLocParent];
-    private LocationInfo[] locChild = new LocationInfo[numLocChild];
+    public static LocationInfo[] locParent = new LocationInfo[numLocParent];
+    public static LocationInfo[] locChild = new LocationInfo[numLocChild];
 
     AssetManager assetManager;
 
