@@ -97,17 +97,25 @@
                         android:textSize="30sp" />
 
                     <ScrollView
+                        android:id="@+id/second_scrollview"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:layout_weight="1"
                         android:visibility="visible">
 
-                        <LinearLayout
-                            android:id="@+id/second_region_layout"
+                        <FrameLayout
+                            android:id="@+id/second_frame"
                             android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:orientation="vertical" />
+                            android:layout_height="wrap_content">
+
+                            <LinearLayout
+                                android:id="@+id/second_region_layout"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="vertical"></LinearLayout>
+                        </FrameLayout>
                     </ScrollView>
+
                 </LinearLayout>
 
             </LinearLayout>
