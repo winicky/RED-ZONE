@@ -1,9 +1,6 @@
-package com.geovengers.redzone;
+package com.example.redzone;
 
-import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
-import org.w3c.dom.Text;
 
 import android.Manifest;
 import android.app.AlertDialog;
@@ -14,7 +11,6 @@ import android.content.res.AssetManager;
 import android.graphics.Color;
 import android.location.LocationManager;
 import android.os.Bundle;
-import android.os.Handler;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
@@ -31,18 +27,22 @@ import androidx.core.content.ContextCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 
 import net.daum.mf.map.api.MapCircle;
-import net.daum.mf.map.api.MapPOIItem;
 import net.daum.mf.map.api.MapPoint;
 import net.daum.mf.map.api.MapReverseGeoCoder;
 import net.daum.mf.map.api.MapView;
 
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 import static android.view.View.*;
 
@@ -59,6 +59,9 @@ public class MainActivity extends AppCompatActivity implements MapView.MapViewEv
 
     private static final String LOG_TAG = "MainActivity";
 
+    private Service service = ApiUtils.getService();
+    private final CircleRequest circleRequest = new CircleRequest();
+
     private DrawerLayout drawerLayout;
     private View drawerView;
     private MapView mMapView;
@@ -66,8 +69,8 @@ public class MainActivity extends AppCompatActivity implements MapView.MapViewEv
     private int count;
     private int mode = 0; // 0 = zoom level 0~8, 1 = zoom level 9~
 
-    public static final int numLocParent = 17;
-    public static final int numLocChild = 229;
+    private static final int numLocParent = 17;
+    private static final int numLocChild = 229;
 
 
     private JSONObject mapInfo = new JSONObject();
@@ -75,8 +78,8 @@ public class MainActivity extends AppCompatActivity implements MapView.MapViewEv
     private String[] disasterType = new String[15];
     private String[] warningLevel = new String[3];
 
-    public static LocationInfo[] locParent = new LocationInfo[numLocParent];
-    public static LocationInfo[] locChild = new LocationInfo[numLocChild];
+    private LocationInfo[] locParent = new LocationInfo[numLocParent];
+    private LocationInfo[] locChild = new LocationInfo[numLocChild];
 
     AssetManager assetManager;
 
@@ -185,6 +188,20 @@ public class MainActivity extends AppCompatActivity implements MapView.MapViewEv
             checkRunTimePermission();
         }
 
+        String start_date = new String("2020-01-01");
+        String end_date = new String("2020-12-31");
+        String disaster_group = new String("질병");
+        List<String> disaster_type = new ArrayList<>(Arrays.asList("코로나"));
+        List<String> disaster_level = new ArrayList<>(Arrays.asList("Info", "Warning"));
+
+        circleRequest.setStart_date(start_date);
+        circleRequest.setEnd_date(end_date);
+        circleRequest.setDisaster_group(disaster_group);
+        circleRequest.setDisaster_type(disaster_type);
+        circleRequest.setDisaster_level(disaster_level);
+
+
+
         Button open_button = (Button)findViewById(R.id.open_button);
         open_button.setOnClickListener(new OnClickListener(){
             @Override
@@ -194,7 +211,7 @@ public class MainActivity extends AppCompatActivity implements MapView.MapViewEv
         });
 
         Button close_button = (Button)findViewById(R.id.close_button);
-        close_button.setOnClickListener(new View.OnClickListener() {
+        close_button.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
                 drawerLayout.closeDrawers();
@@ -202,7 +219,7 @@ public class MainActivity extends AppCompatActivity implements MapView.MapViewEv
         });
 
         Button detail_button = (Button)findViewById(R.id.detail_button);
-        detail_button.setOnClickListener(new View.OnClickListener(){
+        detail_button.setOnClickListener(new OnClickListener(){
             @Override
             public void onClick(View v) {
                 TextView textView = (TextView)findViewById(R.id.textView);
@@ -210,9 +227,11 @@ public class MainActivity extends AppCompatActivity implements MapView.MapViewEv
             }
         });
 
+
+
         //  20.05.16 소스 추가
         Button b_filter_button = (Button) findViewById(R.id.filter_button);
-        b_filter_button.setOnClickListener(new Button.OnClickListener() {
+        b_filter_button.setOnClickListener(new OnClickListener() {
             public void onClick(View v) {
                 Intent filter_intent = new Intent(getApplicationContext(), set_filter.class);
                 startActivityForResult(filter_intent, REQUEST_CODE_FILTER);
@@ -220,7 +239,7 @@ public class MainActivity extends AppCompatActivity implements MapView.MapViewEv
         });
 
         Button text_list_button = (Button) findViewById(R.id.text_list_button);
-        text_list_button.setOnClickListener(new Button.OnClickListener() {
+        text_list_button.setOnClickListener(new OnClickListener() {
             public void onClick(View v) {
                 Intent message_intent = new Intent(getApplicationContext(), message_list.class);
                 startActivityForResult(message_intent, REQUEST_CODE_FILTER);
@@ -229,15 +248,16 @@ public class MainActivity extends AppCompatActivity implements MapView.MapViewEv
         //  20.05.16 소스 추가 끝
 
         ImageButton cp_button = (ImageButton)findViewById(R.id.cp_button);
-        cp_button.setOnClickListener(new View.OnClickListener() {
+        cp_button.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                mMapView.setMapCenterPointAndZoomLevel(tempMapPoint, 5, false);
+                //MapView.setMapCenterPointAndZoomLevel(tempMapPoint, 5, false);
+                loadAnswers(circleRequest);
             }
         });
 
         drawerLayout.setDrawerListener(listner);
-        drawerView.setOnTouchListener(new View.OnTouchListener(){
+        drawerView.setOnTouchListener(new OnTouchListener(){
             @Override
             public boolean onTouch(View v, MotionEvent event) {
                 return false;
@@ -267,6 +287,30 @@ public class MainActivity extends AppCompatActivity implements MapView.MapViewEv
 
         }
     };
+
+    public void loadAnswers(CircleRequest circleRequest) {
+        service.getCircleAPI(circleRequest).enqueue(new Callback<CircleResponse>() {
+            @Override
+            public void onResponse(Call<CircleResponse> call, Response<CircleResponse> response) {
+                if(response.isSuccessful()) {
+                    TextView textView = (TextView)findViewById(R.id.textView);
+                    //textView.setText(response.body().getStartDate());
+                    textView.setText(response.body().getCount().get(1).getWarningCount().toString());
+                    Log.d("MainActivity", "posts loaded from API");
+                }else {
+                    int statusCode  = response.code();
+                    // handle request errors depending on status code
+                }
+            }
+
+            @Override
+            public void onFailure(Call<CircleResponse> call, Throwable t) {
+                //showErrorMessage();
+                Log.d("MainActivity", "error loading from API");
+
+            }
+        });
+    }
 
     @Override
     protected void onDestroy() {
