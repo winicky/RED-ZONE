@@ -11,12 +11,16 @@ public class Count {
     @SerializedName("location_code")
     @Expose
     private String locationCode;
+    @SerializedName("location_group")
+    @Expose
+    private Integer locationGroup;
     @SerializedName("info_count")
     @Expose
     private Integer infoCount;
     @SerializedName("warning_count")
     @Expose
     private Integer warningCount;
+
 
     public String getLocationName() {
         return locationName;
@@ -33,6 +37,10 @@ public class Count {
     public void setLocationCode(String locationCode) {
         this.locationCode = locationCode;
     }
+
+    public Integer getLocationGroup() { return locationGroup; }
+
+    public void setLocationGroup(Integer locationGroup) { this.locationGroup = locationGroup; }
 
     public Integer getInfoCount() {
         return infoCount;

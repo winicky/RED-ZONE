@@ -1,4 +1,4 @@
-package com.geovengers.redzone;
+package com.example.redzone;
 
 import android.os.Bundle;
 

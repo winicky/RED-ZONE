@@ -66,20 +66,20 @@ public class MainActivity extends AppCompatActivity implements MapView.MapViewEv
     private View drawerView;
     private MapView mMapView;
     private MapPoint tempMapPoint;
-    private int count;
+    private int isStart;
     private int mode = 0; // 0 = zoom level 0~8, 1 = zoom level 9~
 
-    private static final int numLocParent = 17;
-    private static final int numLocChild = 229;
+    public static final int numLocParent = 16;
+    public static final int numLocChild = 229;
+    private static final int sejongParentIndex = 7;
+    private static final int sejongChildIndex = 74;
+    private Integer totalInfoCount = 0;
+    private Integer totalWarningCount = 0;
 
 
-    private JSONObject mapInfo = new JSONObject();
-    private String[] disasterGroup = new String[3];
-    private String[] disasterType = new String[15];
-    private String[] warningLevel = new String[3];
 
-    private LocationInfo[] locParent = new LocationInfo[numLocParent];
-    private LocationInfo[] locChild = new LocationInfo[numLocChild];
+    public static LocationInfo[] locParent = new LocationInfo[numLocParent];
+    public static LocationInfo[] locChild = new LocationInfo[numLocChild];
 
     AssetManager assetManager;
 
@@ -176,9 +176,6 @@ public class MainActivity extends AppCompatActivity implements MapView.MapViewEv
         mMapView.setCurrentLocationEventListener(this);
         mMapView.setMapViewEventListener(this);
 
-        disasterGroup = null;
-        disasterType = null;
-
         addCirclesChild();
 
         if (!checkLocationServicesStatus()) {
@@ -188,11 +185,11 @@ public class MainActivity extends AppCompatActivity implements MapView.MapViewEv
             checkRunTimePermission();
         }
 
-        String start_date = new String("2020-01-01");
-        String end_date = new String("2020-12-31");
+        String start_date = new String("2020-05-10");
+        String end_date = new String("2020-05-10");
         String disaster_group = new String("질병");
         List<String> disaster_type = new ArrayList<>(Arrays.asList("코로나"));
-        List<String> disaster_level = new ArrayList<>(Arrays.asList("Info", "Warning"));
+        List<String> disaster_level = new ArrayList<>(Arrays.asList("info", "warning"));
 
         circleRequest.setStart_date(start_date);
         circleRequest.setEnd_date(end_date);
@@ -252,7 +249,7 @@ public class MainActivity extends AppCompatActivity implements MapView.MapViewEv
             @Override
             public void onClick(View v) {
                 //MapView.setMapCenterPointAndZoomLevel(tempMapPoint, 5, false);
-                loadAnswers(circleRequest);
+                loadCircleAPI(circleRequest);
             }
         });
 
@@ -288,16 +285,41 @@ public class MainActivity extends AppCompatActivity implements MapView.MapViewEv
         }
     };
 
-    public void loadAnswers(CircleRequest circleRequest) {
+    public void loadCircleAPI(CircleRequest circleRequest) {
         service.getCircleAPI(circleRequest).enqueue(new Callback<CircleResponse>() {
             @Override
             public void onResponse(Call<CircleResponse> call, Response<CircleResponse> response) {
-                if(response.isSuccessful()) {
-                    TextView textView = (TextView)findViewById(R.id.textView);
-                    //textView.setText(response.body().getStartDate());
-                    textView.setText(response.body().getCount().get(1).getWarningCount().toString());
-                    Log.d("MainActivity", "posts loaded from API");
-                }else {
+                if (response.isSuccessful()) {
+                    //TextView textView = (TextView)findViewById(R.id.textView);
+                    //textView.setText(response.body().getCount().get(1).getWarningCount().toString());
+                    CircleResponse body = response.body();
+                    totalInfoCount = 0;
+                    totalWarningCount = 0;
+
+                    for (int i = 0; i < body.getCount().size(); i++) {
+                        if (body.getCount().get(i).getLocationGroup() == 0) {
+                            for (int j = 0; j < numLocParent; j++) {
+                                if (body.getCount().get(i).getLocationCode().equals(locParent[j].locationCode)) {
+                                    locParent[j].infoCount = body.getCount().get(i).getInfoCount();
+                                    locParent[j].warningCount = body.getCount().get(i).getWarningCount();
+                                    totalInfoCount += locParent[j].infoCount;
+                                    totalWarningCount += locParent[j].warningCount;
+                                }
+                            }
+
+                        } else {
+                            for(int j=0; j<numLocChild; j++) {
+                                if(body.getCount().get(i).getLocationCode().equals(locChild[j].locationCode)) {
+                                    locChild[j].infoCount = body.getCount().get(i).getInfoCount();
+                                    locChild[j].warningCount = body.getCount().get(i).getWarningCount();
+                                    totalInfoCount += locChild[j].infoCount;
+                                    totalWarningCount += locChild[j].warningCount;
+                                }
+                            }
+                        }
+                    }
+                    Log.d("MainActivity", "infoCount = " + totalInfoCount.toString() + " warningCount = " + totalWarningCount.toString());
+                } else {
                     int statusCode  = response.code();
                     // handle request errors depending on status code
                 }
@@ -378,10 +400,10 @@ public class MainActivity extends AppCompatActivity implements MapView.MapViewEv
     @Override
     public void onMapViewMoveFinished(MapView mapView, MapPoint mapPoint){
         mMapView.setCurrentLocationTrackingMode(MapView.CurrentLocationTrackingMode.TrackingModeOff);
-        if (count == 0){
+        if (isStart == 0){
             tempMapPoint = mMapView.getMapCenterPoint();
             mMapView.setZoomLevel(5, false);
-            count++;
+            isStart++;
         }
     }
 

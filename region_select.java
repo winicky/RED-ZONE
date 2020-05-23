@@ -1,4 +1,4 @@
-package com.geovengers.redzone;
+package com.example.redzone;
 
 import android.content.Intent;
 import android.graphics.Color;
