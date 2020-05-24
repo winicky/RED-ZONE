@@ -1,6 +1,4 @@
-package com.example.redzone;
-
-import org.json.JSONObject;
+package org.techtown.redzone;
 
 import android.Manifest;
 import android.app.AlertDialog;
@@ -60,6 +58,8 @@ public class MainActivity extends AppCompatActivity implements MapView.MapViewEv
     private static final String LOG_TAG = "MainActivity";
 
     private Service service = ApiUtils.getService();
+
+    private final CircleRequest[] initRequest = new CircleRequest[3];
     private final CircleRequest circleRequest = new CircleRequest();
 
     private DrawerLayout drawerLayout;
@@ -67,16 +67,15 @@ public class MainActivity extends AppCompatActivity implements MapView.MapViewEv
     private MapView mMapView;
     private MapPoint tempMapPoint;
     private int isStart;
-    private int mode = 0; // 0 = zoom level 0~8, 1 = zoom level 9~
+    private int mode = 0; // 0(시군구) = zoom level 0~8, 1(도) = zoom level 9~
 
     public static final int numLocParent = 16;
     public static final int numLocChild = 229;
-    private static final int sejongParentIndex = 7;
-    private static final int sejongChildIndex = 74;
-    private Integer totalInfoCount = 0;
-    private Integer totalWarningCount = 0;
 
-
+    private Integer sumParentInfoCount = 0;
+    private Integer sumParentWarningCount = 0;
+    private Integer sumChildInfoCount = 0;
+    private Integer sumChildWarningCount = 0;
 
     public static LocationInfo[] locParent = new LocationInfo[numLocParent];
     public static LocationInfo[] locChild = new LocationInfo[numLocChild];
@@ -100,10 +99,6 @@ public class MainActivity extends AppCompatActivity implements MapView.MapViewEv
         drawerView = (View)findViewById(R.id.drawer);
         mMapView = (MapView) findViewById(R.id.map_view);
         assetManager = getResources().getAssets();
-
-
-
-
 
         InputStream inputStream = null;
 
@@ -176,8 +171,6 @@ public class MainActivity extends AppCompatActivity implements MapView.MapViewEv
         mMapView.setCurrentLocationEventListener(this);
         mMapView.setMapViewEventListener(this);
 
-        addCirclesChild();
-
         if (!checkLocationServicesStatus()) {
 
             showDialogForLocationServiceSetting();
@@ -185,18 +178,48 @@ public class MainActivity extends AppCompatActivity implements MapView.MapViewEv
             checkRunTimePermission();
         }
 
-        String start_date = new String("2020-05-10");
-        String end_date = new String("2020-05-10");
-        String disaster_group = new String("질병");
-        List<String> disaster_type = new ArrayList<>(Arrays.asList("코로나"));
-        List<String> disaster_level = new ArrayList<>(Arrays.asList("info", "warning"));
+        String start_date;
+        String end_date;
+        String disaster_group;
+        List<String> disaster_type;
+        List<String> disaster_level;
+
+        // 앱 시작 후 레드 존 초기화 (initCircleAPI)
+        start_date = new String("2020-03-01");
+        end_date = new String("2020-05-24");
+        disaster_type = new ArrayList<String>();
+        disaster_level = new ArrayList<String>();
+        for(int i=0; i<3; i++) {
+            initRequest[i] = new CircleRequest();
+            initRequest[i].setStart_date(start_date);
+            initRequest[i].setEnd_date(end_date);
+            initRequest[i].setDisaster_type(disaster_type);
+            initRequest[i].setDisaster_level(disaster_level);
+        }
+        initRequest[0].setDisaster_group("기상특보");
+        initRequest[1].setDisaster_group("질병");
+        initRequest[2].setDisaster_group("other");
+
+        clearCount();
+        initCircleAPI(initRequest[0]);
+        initCircleAPI(initRequest[1]);
+        initCircleAPI(initRequest[2]);
+
+        addCirclesChild();
+
+
+        // 필터 쿼리 (loadCircleAPI)
+        start_date = new String("2020-05-10");
+        end_date = new String("2020-05-10");
+        disaster_group = new String("질병");
+        disaster_type = new ArrayList<>(Arrays.asList("코로나"));
+        disaster_level = new ArrayList<>(Arrays.asList("info", "warning"));
 
         circleRequest.setStart_date(start_date);
         circleRequest.setEnd_date(end_date);
         circleRequest.setDisaster_group(disaster_group);
         circleRequest.setDisaster_type(disaster_type);
         circleRequest.setDisaster_level(disaster_level);
-
 
 
         Button open_button = (Button)findViewById(R.id.open_button);
@@ -220,7 +243,7 @@ public class MainActivity extends AppCompatActivity implements MapView.MapViewEv
             @Override
             public void onClick(View v) {
                 TextView textView = (TextView)findViewById(R.id.textView);
-                textView.setText(getNearLocName());
+                textView.setText(getNearLocCode());
             }
         });
 
@@ -248,7 +271,7 @@ public class MainActivity extends AppCompatActivity implements MapView.MapViewEv
         cp_button.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                //MapView.setMapCenterPointAndZoomLevel(tempMapPoint, 5, false);
+                //mMapView.setMapCenterPointAndZoomLevel(tempMapPoint, 5, false);
                 loadCircleAPI(circleRequest);
             }
         });
@@ -293,8 +316,9 @@ public class MainActivity extends AppCompatActivity implements MapView.MapViewEv
                     //TextView textView = (TextView)findViewById(R.id.textView);
                     //textView.setText(response.body().getCount().get(1).getWarningCount().toString());
                     CircleResponse body = response.body();
-                    totalInfoCount = 0;
-                    totalWarningCount = 0;
+
+                    clearLocationInfo();
+                    clearCount();
 
                     for (int i = 0; i < body.getCount().size(); i++) {
                         if (body.getCount().get(i).getLocationGroup() == 0) {
@@ -302,8 +326,8 @@ public class MainActivity extends AppCompatActivity implements MapView.MapViewEv
                                 if (body.getCount().get(i).getLocationCode().equals(locParent[j].locationCode)) {
                                     locParent[j].infoCount = body.getCount().get(i).getInfoCount();
                                     locParent[j].warningCount = body.getCount().get(i).getWarningCount();
-                                    totalInfoCount += locParent[j].infoCount;
-                                    totalWarningCount += locParent[j].warningCount;
+                                    sumParentInfoCount += locParent[j].infoCount;
+                                    sumParentWarningCount += locParent[j].warningCount;
                                 }
                             }
 
@@ -312,13 +336,205 @@ public class MainActivity extends AppCompatActivity implements MapView.MapViewEv
                                 if(body.getCount().get(i).getLocationCode().equals(locChild[j].locationCode)) {
                                     locChild[j].infoCount = body.getCount().get(i).getInfoCount();
                                     locChild[j].warningCount = body.getCount().get(i).getWarningCount();
-                                    totalInfoCount += locChild[j].infoCount;
-                                    totalWarningCount += locChild[j].warningCount;
+                                    sumChildInfoCount += locChild[j].infoCount;
+                                    sumChildWarningCount += locChild[j].warningCount;
+                                    switch(locChild[j].locationCode.substring(0, 2)) {
+                                        case "11":
+                                            locParent[0].infoCount += locChild[j].infoCount;
+                                            locParent[0].warningCount += locChild[j].warningCount;
+                                            break;
+                                        case "26":
+                                            locParent[1].infoCount += locChild[j].infoCount;
+                                            locParent[1].warningCount += locChild[j].warningCount;
+                                            break;
+                                        case "27":
+                                            locParent[2].infoCount += locChild[j].infoCount;
+                                            locParent[2].warningCount += locChild[j].warningCount;
+                                            break;
+                                        case "28":
+                                            locParent[3].infoCount += locChild[j].infoCount;
+                                            locParent[3].warningCount += locChild[j].warningCount;
+                                            break;
+                                        case "29":
+                                            locParent[4].infoCount += locChild[j].infoCount;
+                                            locParent[4].warningCount += locChild[j].warningCount;
+                                            break;
+                                        case "30":
+                                            locParent[5].infoCount += locChild[j].infoCount;
+                                            locParent[5].warningCount += locChild[j].warningCount;
+                                            break;
+                                        case "31":
+                                            locParent[6].infoCount += locChild[j].infoCount;
+                                            locParent[6].warningCount += locChild[j].warningCount;
+                                            break;
+                                        case "41":
+                                            locParent[7].infoCount += locChild[j].infoCount;
+                                            locParent[7].warningCount += locChild[j].warningCount;
+                                            break;
+                                        case "42":
+                                            locParent[8].infoCount += locChild[j].infoCount;
+                                            locParent[8].warningCount += locChild[j].warningCount;
+                                            break;
+                                        case "43":
+                                            locParent[9].infoCount += locChild[j].infoCount;
+                                            locParent[9].warningCount += locChild[j].warningCount;
+                                            break;
+                                        case "44":
+                                            locParent[10].infoCount += locChild[j].infoCount;
+                                            locParent[10].warningCount += locChild[j].warningCount;
+                                            break;
+                                        case "45":
+                                            locParent[11].infoCount += locChild[j].infoCount;
+                                            locParent[11].warningCount += locChild[j].warningCount;
+                                            break;
+                                        case "46":
+                                            locParent[12].infoCount += locChild[j].infoCount;
+                                            locParent[12].warningCount += locChild[j].warningCount;
+                                            break;
+                                        case "47":
+                                            locParent[13].infoCount += locChild[j].infoCount;
+                                            locParent[13].warningCount += locChild[j].warningCount;
+                                            break;
+                                        case "48":
+                                            locParent[14].infoCount += locChild[j].infoCount;
+                                            locParent[14].warningCount += locChild[j].warningCount;
+                                            break;
+                                        case "50":
+                                            locParent[15].infoCount += locChild[j].infoCount;
+                                            locParent[15].warningCount += locChild[j].warningCount;
+                                            break;
+                                        default:
+                                            ;
+                                    }
                                 }
                             }
                         }
                     }
-                    Log.d("MainActivity", "infoCount = " + totalInfoCount.toString() + " warningCount = " + totalWarningCount.toString());
+                    sumParentInfoCount += sumChildInfoCount;
+                    sumParentWarningCount += sumChildWarningCount;
+                    Log.d("loadCircleAPI", "ParentInfoCount = " + sumParentInfoCount.toString() + " ParentWarningCount = " + sumParentWarningCount.toString());
+                    Log.d("loadCircleAPI", "ChildInfoCount = " + sumChildInfoCount.toString() + " ChildWarningCount = " + sumChildWarningCount.toString());
+                } else {
+                    int statusCode  = response.code();
+                    // handle request errors depending on status code
+                }
+            }
+
+            @Override
+            public void onFailure(Call<CircleResponse> call, Throwable t) {
+                //showErrorMessage();
+                Log.d("MainActivity", "error loading from API");
+
+            }
+        });
+    }
+
+    public void initCircleAPI(CircleRequest circleRequest) {
+        service.getCircleAPI(circleRequest).enqueue(new Callback<CircleResponse>() {
+            @Override
+            public void onResponse(Call<CircleResponse> call, Response<CircleResponse> response) {
+                if (response.isSuccessful()) {
+                    //TextView textView = (TextView)findViewById(R.id.textView);
+                    //textView.setText(response.body().getCount().get(1).getWarningCount().toString());
+                    CircleResponse body = response.body();
+
+                    for (int i = 0; i < body.getCount().size(); i++) {
+                        if (body.getCount().get(i).getLocationGroup() == 0) {
+                            for (int j = 0; j < numLocParent; j++) {
+                                if (body.getCount().get(i).getLocationCode().equals(locParent[j].locationCode)) {
+                                    locParent[j].infoCount += body.getCount().get(i).getInfoCount();
+                                    locParent[j].warningCount += body.getCount().get(i).getWarningCount();
+                                    sumParentInfoCount += locParent[j].infoCount;
+                                    sumParentWarningCount += locParent[j].warningCount;
+                                }
+                            }
+
+                        } else {
+                            for(int j=0; j<numLocChild; j++) {
+                                if(body.getCount().get(i).getLocationCode().equals(locChild[j].locationCode)) {
+                                    locChild[j].infoCount += body.getCount().get(i).getInfoCount();
+                                    locChild[j].warningCount += body.getCount().get(i).getWarningCount();
+                                    sumChildInfoCount += locChild[j].infoCount;
+                                    sumChildWarningCount += locChild[j].warningCount;
+                                    switch(locChild[j].locationCode.substring(0, 2)) {
+                                        case "11":
+                                            locParent[0].infoCount += locChild[j].infoCount;
+                                            locParent[0].warningCount += locChild[j].warningCount;
+                                            break;
+                                        case "26":
+                                            locParent[1].infoCount += locChild[j].infoCount;
+                                            locParent[1].warningCount += locChild[j].warningCount;
+                                            break;
+                                        case "27":
+                                            locParent[2].infoCount += locChild[j].infoCount;
+                                            locParent[2].warningCount += locChild[j].warningCount;
+                                            break;
+                                        case "28":
+                                            locParent[3].infoCount += locChild[j].infoCount;
+                                            locParent[3].warningCount += locChild[j].warningCount;
+                                            break;
+                                        case "29":
+                                            locParent[4].infoCount += locChild[j].infoCount;
+                                            locParent[4].warningCount += locChild[j].warningCount;
+                                            break;
+                                        case "30":
+                                            locParent[5].infoCount += locChild[j].infoCount;
+                                            locParent[5].warningCount += locChild[j].warningCount;
+                                            break;
+                                        case "31":
+                                            locParent[6].infoCount += locChild[j].infoCount;
+                                            locParent[6].warningCount += locChild[j].warningCount;
+                                            break;
+                                        case "41":
+                                            locParent[7].infoCount += locChild[j].infoCount;
+                                            locParent[7].warningCount += locChild[j].warningCount;
+                                            break;
+                                        case "42":
+                                            locParent[8].infoCount += locChild[j].infoCount;
+                                            locParent[8].warningCount += locChild[j].warningCount;
+                                            break;
+                                        case "43":
+                                            locParent[9].infoCount += locChild[j].infoCount;
+                                            locParent[9].warningCount += locChild[j].warningCount;
+                                            break;
+                                        case "44":
+                                            locParent[10].infoCount += locChild[j].infoCount;
+                                            locParent[10].warningCount += locChild[j].warningCount;
+                                            break;
+                                        case "45":
+                                            locParent[11].infoCount += locChild[j].infoCount;
+                                            locParent[11].warningCount += locChild[j].warningCount;
+                                            break;
+                                        case "46":
+                                            locParent[12].infoCount += locChild[j].infoCount;
+                                            locParent[12].warningCount += locChild[j].warningCount;
+                                            break;
+                                        case "47":
+                                            locParent[13].infoCount += locChild[j].infoCount;
+                                            locParent[13].warningCount += locChild[j].warningCount;
+                                            break;
+                                        case "48":
+                                            locParent[14].infoCount += locChild[j].infoCount;
+                                            locParent[14].warningCount += locChild[j].warningCount;
+                                            break;
+                                        case "50":
+                                            locParent[15].infoCount += locChild[j].infoCount;
+                                            locParent[15].warningCount += locChild[j].warningCount;
+                                            break;
+                                        default:
+                                            ;
+                                    }
+                                    //sumParentInfoCount += locChild[j].infoCount;
+                                    //sumParentWarningCount += locChild[j].warningCount;
+
+                                }
+                            }
+                        }
+                    }
+                    sumParentInfoCount += sumChildInfoCount;
+                    sumParentWarningCount += sumChildWarningCount;
+                    Log.d("initCircleAPI", "parentInfoCount = " + sumParentInfoCount.toString() + " parentWarningCount = " + sumParentWarningCount.toString());
+                    Log.d("initCircleAPI", "childInfoCount = " + sumChildInfoCount.toString() + " childWarningCount = " + sumChildWarningCount.toString());
                 } else {
                     int statusCode  = response.code();
                     // handle request errors depending on status code
@@ -529,8 +745,6 @@ public class MainActivity extends AppCompatActivity implements MapView.MapViewEv
 
     }
 
-
-
     //여기부터는 GPS 활성화를 위한 메소드들
     private void showDialogForLocationServiceSetting() {
 
@@ -585,6 +799,7 @@ public class MainActivity extends AppCompatActivity implements MapView.MapViewEv
         return locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)
                 || locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
     }
+
     private double getDistance(double latitude, double longitude){
         double x, y;
         x = mMapView.getMapCenterPoint().getMapPointGeoCoord().latitude;
@@ -592,7 +807,7 @@ public class MainActivity extends AppCompatActivity implements MapView.MapViewEv
         return Math.abs(latitude - x) + Math.abs(longitude - y);
     }
 
-    private String getNearLocName() {
+    private String getNearLocCode() {
         double minDistance, tempDistance;
         int minIndex = 0;
         if (mode == 0){
@@ -604,7 +819,7 @@ public class MainActivity extends AppCompatActivity implements MapView.MapViewEv
                     minIndex = i;
                 }
             }
-            return locChild[minIndex].locationName;
+            return locChild[minIndex].locationCode;
         }
         else {
             minDistance = getDistance(locParent[0].latitude, locParent[0].longitude);
@@ -615,36 +830,79 @@ public class MainActivity extends AppCompatActivity implements MapView.MapViewEv
                     minIndex = i;
                 }
             }
-            return locParent[minIndex].locationName;
+            return locParent[minIndex].locationCode;
         }
     }
 
     private void addCirclesParent() {
         MapCircle[] circles = new MapCircle[numLocParent];
+        int radius;
+        int total = sumParentInfoCount + sumParentWarningCount;
+        Log.d("addCirclesParent", "ParentInfoCount = " + sumParentInfoCount.toString() + " ParentWarningCount = " + sumParentWarningCount.toString());
+        Log.d("addCirclesParent", "ChildInfoCount = " + sumChildInfoCount.toString() + " ChildWarningCount = " + sumChildWarningCount.toString());
         for (int i = 0; i < numLocParent; i++) {
+            try {
+                radius = 100000 * (locParent[i].infoCount + locParent[i].warningCount) / total;
+            } catch(ArithmeticException e) {
+                radius = 0;
+                Log.d("addCirclesParent", "[ArithmeticException] : " + locParent[i].locationName + " set radius 0");
+            }
             circles[i] = new MapCircle(
                     MapPoint.mapPointWithGeoCoord(locParent[i].latitude, locParent[i].longitude), // center
-                    10000, // radius
+                    radius,
+                    //10000, // radius
                     Color.argb(128, 255, 0, 0), // strokeColor
                     Color.argb(128, 255, 0, 0) // fillColor
             );
             circles[i].setTag(i);
+            Log.d("addCirclesParent", locParent[i].locationName + " radius: " + radius);
+            Log.d("addCirclesParent", "infoCount = " + locParent[i].infoCount + " warningCount = " + locParent[i].warningCount);
             mMapView.addCircle(circles[i]);
         }
 
     }
     private void addCirclesChild() {
         MapCircle[] circles = new MapCircle[numLocChild];
+        int radius;
+        int total = sumChildInfoCount + sumChildWarningCount;
+        Log.d("addCirclesChild", "ParentInfoCount = " + sumParentInfoCount.toString() + " ParentWarningCount = " + sumParentWarningCount.toString());
+        Log.d("addCirclesChild", "ChildInfoCount = " + sumChildInfoCount.toString() + " ChildWarningCount = " + sumChildWarningCount.toString());
         for (int i = 0; i < numLocChild; i++) {
+            try {
+                radius = 100000 * (locChild[i].infoCount + locChild[i].warningCount) / total;
+            } catch(ArithmeticException e) {
+                radius = 0;
+                Log.d("addCirclesChild", "[ArithmeticException] : " + locChild[i].locationName + " set radius 0");
+            }
+
             circles[i] = new MapCircle(
                     MapPoint.mapPointWithGeoCoord(locChild[i].latitude, locChild[i].longitude), // center
-                    1000, // radius
+                    radius,
+                    //1000, // radius
                     Color.argb(128, 255, 0, 0), // strokeColor
                     Color.argb(128, 255, 0, 0) // fillColor
             );
             circles[i].setTag(i);
+            Log.d("addCirclesChild", locChild[i].locationName + " radius: " + radius);
             mMapView.addCircle(circles[i]);
         }
+    }
 
+    private void clearLocationInfo() {
+        for(int i=0; i<numLocParent; i++) {
+            locParent[i].infoCount = 0;
+            locParent[i].warningCount = 0;
+        }
+        for(int i=0; i<numLocChild; i++) {
+            locChild[i].infoCount = 0;
+            locChild[i].warningCount = 0;
+        }
+    }
+
+    private void clearCount() {
+        sumParentInfoCount = 0;
+        sumParentWarningCount = 0;
+        sumChildInfoCount = 0;
+        sumChildWarningCount = 0;
     }
 }
