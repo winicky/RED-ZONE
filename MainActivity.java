@@ -272,6 +272,7 @@ public class MainActivity extends AppCompatActivity implements MapView.MapViewEv
             @Override
             public void onClick(View v) {
                 //mMapView.setMapCenterPointAndZoomLevel(tempMapPoint, 5, false);
+                mMapView.removeAllCircles();
                 loadCircleAPI(circleRequest);
             }
         });
@@ -414,6 +415,8 @@ public class MainActivity extends AppCompatActivity implements MapView.MapViewEv
                     sumParentWarningCount += sumChildWarningCount;
                     Log.d("loadCircleAPI", "ParentInfoCount = " + sumParentInfoCount.toString() + " ParentWarningCount = " + sumParentWarningCount.toString());
                     Log.d("loadCircleAPI", "ChildInfoCount = " + sumChildInfoCount.toString() + " ChildWarningCount = " + sumChildWarningCount.toString());
+                    addCirclesParent(); // 필터 버튼 적용이 완료되면 addCirclesChild() 로 바꿀 것
+
                 } else {
                     int statusCode  = response.code();
                     // handle request errors depending on status code
@@ -835,6 +838,7 @@ public class MainActivity extends AppCompatActivity implements MapView.MapViewEv
     }
 
     private void addCirclesParent() {
+        Log.d("hohohohoohhohhohooh", "-----------------------------------");
         MapCircle[] circles = new MapCircle[numLocParent];
         int radius;
         int total = sumParentInfoCount + sumParentWarningCount;
