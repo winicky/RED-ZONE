@@ -1,4 +1,4 @@
-package com.example.redzone;
+package com.geovengers.redzone;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -25,9 +25,18 @@ public class set_filter extends AppCompatActivity {
     Date start_date = new Date();
     Date end_date = new Date();
 
-
+    public static final int REQUEST_CODE_FILTER = 1001;
     public static final int REQUEST_CODE_DISEASE = 1002;
     public static final int REQUEST_CODE_REGION = 1003;
+
+
+    Bundle total_bundle = new Bundle();
+    String code_region = new String();
+    String disease = new String();
+    int info=0, warning=0;
+    String startdate = new String();
+    String enddate = new String();
+
 
 
     @Override
@@ -39,17 +48,27 @@ public class set_filter extends AppCompatActivity {
         b_reset.setOnClickListener(new Button.OnClickListener() {
             public void onClick(View v) {
                 //  클릭해서 적용 되었던 필터 설정을 전부 해제
+                b_info.setChecked(false);
+                status_info = false;
+                b_warning.setChecked(false);
+                status_warning = false;
             }
         });
 
         ImageButton b_apply = (ImageButton) findViewById(R.id.apply);
         b_apply.setOnClickListener(new Button.OnClickListener() {
             public void onClick(View v) {
-
-                // 필터 설정을 전부 파라미터로 넘기고 set_filter로 이동(뒤로가기)
-
-
-                onBackPressed();
+                // 필터 설정을 전부 파라미터로 넘기고 MainActivity로 이동(finish)
+                Intent return_filter_intent = new Intent(getApplicationContext(), MainActivity.class);
+                total_bundle.putString("CODE_REGION", code_region);
+                total_bundle.putString("DISEASE", disease);
+                total_bundle.putInt("INFO", info);
+                total_bundle.putInt("WARNING", warning);
+                total_bundle.putString("STARTDATE", startdate);
+                total_bundle.putString("ENDDATE", enddate);
+                return_filter_intent.putExtra("TOTAL_BUNDLE", total_bundle);
+                setResult(REQUEST_CODE_FILTER, return_filter_intent);
+                finish();
             }
         });
 
@@ -83,7 +102,7 @@ public class set_filter extends AppCompatActivity {
         b_info.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (b_info.isChecked()) {                       //  info 버튼이 체크 되어있는 상태이므로
+                if (!b_info.isChecked()) {                      //  info 버튼이 체크 되어있는 상태이므로
                     status_info = false;                        //  status_info를 false로 변경
                 } else {                                        //  info 버튼이 체크 해제 되어있는 상태이므로
                     status_info = true;                         //  status_info를 true로 변경
@@ -95,14 +114,14 @@ public class set_filter extends AppCompatActivity {
         b_warning.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (b_warning.isChecked()) {                    //  warning 버튼이 체크 되어있는 상태이므로
+                if (!b_warning.isChecked()) {                   //  warning 버튼이 체크 되어있는 상태이므로
                     status_warning = false;                     //  status_warning을 false로 변경
                 } else {                                        //  warning 버튼이 체크 해제 되어있는 상태이므로
                     status_warning = true;                      //  status_warning을 true로 변경
                 }
             }
         });
-
-
     }
+
+    //public void onActivityResult()
 }
