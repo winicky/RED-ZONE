@@ -119,6 +119,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
+                android:clickable="false"
                 android:ems="10"
                 android:inputType="textPersonName"
                 android:text="~" />
@@ -131,14 +132,24 @@
                 android:ems="10"
                 android:hint="선택해주세요"
                 android:inputType="date" />
+
         </LinearLayout>
 
-        <CalendarView
-            android:id="@+id/calendarView"
+        <LinearLayout
+            android:id="@+id/chip_layout"
             android:layout_width="match_parent"
-            android:layout_height="287dp"
-            android:longClickable="false"
-            android:visibility="invisible" />
+            android:layout_height="match_parent"
+            android:layout_weight="10"
+            android:orientation="vertical">
+
+
+            <TextView
+                android:id="@+id/check_region"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="region : " />
+        </LinearLayout>
+
     </LinearLayout>
 
     <LinearLayout

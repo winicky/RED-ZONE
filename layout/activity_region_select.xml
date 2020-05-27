@@ -104,7 +104,7 @@
                         android:visibility="visible">
 
                         <FrameLayout
-                            android:id="@+id/second_frame"
+                            android:id="@+id/frame_second"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content">
 
@@ -148,6 +148,13 @@
             android:layout_height="match_parent"
             android:layout_weight="1"
             app:srcCompat="?android:attr/textCheckMark" />
+
+        <TextView
+            android:id="@+id/temp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="region : " />
 
     </LinearLayout>
 
