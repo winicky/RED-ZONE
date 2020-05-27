@@ -1,14 +1,15 @@
-package com.example.redzone;
+package com.geovengers.redzone;
 
+import java.io.Serializable;
 import java.util.List;
 
-public class CircleRequest {
+public class CircleRequest implements Serializable {
     private String start_date;
     private String end_date;
     private String disaster_group;
     private List<String> disaster_type;
     private List<String> disaster_level;
-
+    private final static long serialVersionUID = 7560425657774133335L;
 
     public String getStart_date() {
         return start_date;

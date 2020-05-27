@@ -1,4 +1,4 @@
-package org.techtown.redzone;
+package com.geovengers.redzone;
 
 import android.Manifest;
 import android.app.AlertDialog;
@@ -23,6 +23,16 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
+
+import com.geovengers.redzone.ApiUtils;
+import com.geovengers.redzone.CircleRequest;
+import com.geovengers.redzone.CircleResponse;
+import com.geovengers.redzone.MsgRequest;
+import com.geovengers.redzone.R;
+import com.geovengers.redzone.Service;
+import com.geovengers.redzone.message_list;
+import com.geovengers.redzone.pie_chart;
+import com.geovengers.redzone.set_filter;
 
 import net.daum.mf.map.api.MapCircle;
 import net.daum.mf.map.api.MapPoint;
@@ -59,8 +69,10 @@ public class MainActivity extends AppCompatActivity implements MapView.MapViewEv
 
     private Service service = ApiUtils.getService();
 
-    private final CircleRequest[] initRequest = new CircleRequest[3];
-    private final CircleRequest circleRequest = new CircleRequest();
+    private CircleRequest[] initRequest = new CircleRequest[3];
+    private CircleRequest circleRequest = new CircleRequest();
+    private MsgRequest msgRequest = new MsgRequest();
+    private MsgResponse msgResponse = new MsgResponse();
 
     private DrawerLayout drawerLayout;
     private View drawerView;
@@ -209,11 +221,11 @@ public class MainActivity extends AppCompatActivity implements MapView.MapViewEv
 
 
         // 필터 쿼리 (loadCircleAPI)
-        start_date = new String("2020-05-10");
+        start_date = new String("2017-01-01");
         end_date = new String("2020-05-10");
         disaster_group = new String("질병");
-        disaster_type = new ArrayList<>(Arrays.asList("코로나"));
-        disaster_level = new ArrayList<>(Arrays.asList("info", "warning"));
+        disaster_type = new ArrayList<>();
+        disaster_level = new ArrayList<>();
 
         circleRequest.setStart_date(start_date);
         circleRequest.setEnd_date(end_date);
@@ -242,12 +254,18 @@ public class MainActivity extends AppCompatActivity implements MapView.MapViewEv
         detail_button.setOnClickListener(new OnClickListener(){
             @Override
             public void onClick(View v) {
-                TextView textView = (TextView)findViewById(R.id.textView);
-                textView.setText(getNearLocCode());
+                msgRequest.setLocation_code("1100000000");
+                msgRequest.setStart_date(circleRequest.getStart_date());
+                msgRequest.setEnd_date(circleRequest.getEnd_date());
+                msgRequest.setDisaster_group(circleRequest.getDisaster_group());
+                msgRequest.setDisaster_type(circleRequest.getDisaster_type());
+                msgRequest.setDisaster_level(circleRequest.getDisaster_level());
+
+                loadMsgAPI(msgRequest);
+                Log.d("1번", "여기");
+
             }
         });
-
-
 
         //  20.05.16 소스 추가
         Button b_filter_button = (Button) findViewById(R.id.filter_button);
@@ -258,21 +276,11 @@ public class MainActivity extends AppCompatActivity implements MapView.MapViewEv
             }
         });
 
-        Button text_list_button = (Button) findViewById(R.id.text_list_button);
-        text_list_button.setOnClickListener(new OnClickListener() {
-            public void onClick(View v) {
-                Intent message_intent = new Intent(getApplicationContext(), message_list.class);
-                startActivityForResult(message_intent, REQUEST_CODE_FILTER);
-            }
-        });
-        //  20.05.16 소스 추가 끝
-
         ImageButton cp_button = (ImageButton)findViewById(R.id.cp_button);
         cp_button.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
                 //mMapView.setMapCenterPointAndZoomLevel(tempMapPoint, 5, false);
-                mMapView.removeAllCircles();
                 loadCircleAPI(circleRequest);
             }
         });
@@ -415,9 +423,8 @@ public class MainActivity extends AppCompatActivity implements MapView.MapViewEv
                     sumParentWarningCount += sumChildWarningCount;
                     Log.d("loadCircleAPI", "ParentInfoCount = " + sumParentInfoCount.toString() + " ParentWarningCount = " + sumParentWarningCount.toString());
                     Log.d("loadCircleAPI", "ChildInfoCount = " + sumChildInfoCount.toString() + " ChildWarningCount = " + sumChildWarningCount.toString());
-                    addCirclesParent(); // 필터 버튼 적용이 완료되면 addCirclesChild() 로 바꿀 것
-
-                } else {
+                }
+                else {
                     int statusCode  = response.code();
                     // handle request errors depending on status code
                 }
@@ -431,6 +438,8 @@ public class MainActivity extends AppCompatActivity implements MapView.MapViewEv
             }
         });
     }
+
+
 
     public void initCircleAPI(CircleRequest circleRequest) {
         service.getCircleAPI(circleRequest).enqueue(new Callback<CircleResponse>() {
@@ -546,6 +555,33 @@ public class MainActivity extends AppCompatActivity implements MapView.MapViewEv
 
             @Override
             public void onFailure(Call<CircleResponse> call, Throwable t) {
+                //showErrorMessage();
+                Log.d("MainActivity", "error loading from API");
+
+            }
+        });
+    }
+    public void loadMsgAPI(MsgRequest msgRequest) {
+        service.getMsgAPI(msgRequest).enqueue(new Callback<MsgResponse>() {
+            @Override
+            public void onResponse(Call<MsgResponse> call, Response<MsgResponse> response) {
+                if(response.isSuccessful()) {
+                    msgResponse = response.body();
+                    Log.d("2번", "여기");
+                    //mAdapter.updateAnswers(response.body().getItems());
+                    Log.d("MainActivity", "posts loaded from API" + msgResponse.getEndDate());
+
+                    Intent detail_intent = new Intent(getApplicationContext(), pie_chart.class);
+                    detail_intent.putExtra("msgResponse", msgResponse);
+                    startActivityForResult(detail_intent, REQUEST_CODE_FILTER);
+                }else {
+                    int statusCode  = response.code();
+                    // handle request errors depending on status code
+                }
+            }
+
+            @Override
+            public void onFailure(Call<MsgResponse> call, Throwable t) {
                 //showErrorMessage();
                 Log.d("MainActivity", "error loading from API");
 
@@ -669,18 +705,18 @@ public class MainActivity extends AppCompatActivity implements MapView.MapViewEv
 
         if ( permsRequestCode == PERMISSIONS_REQUEST_CODE && grandResults.length == REQUIRED_PERMISSIONS.length) {
 
-                // 요청 코드가 PERMISSIONS_REQUEST_CODE 이고, 요청한 퍼미션 개수만큼 수신되었다면
+            // 요청 코드가 PERMISSIONS_REQUEST_CODE 이고, 요청한 퍼미션 개수만큼 수신되었다면
 
-                boolean check_result = true;
+            boolean check_result = true;
 
 
-                // 모든 퍼미션을 허용했는지 체크합니다.
+            // 모든 퍼미션을 허용했는지 체크합니다.
 
-                for (int result : grandResults) {
-                    if (result != PackageManager.PERMISSION_GRANTED) {
-                        check_result = false;
-                        break;
-                    }
+            for (int result : grandResults) {
+                if (result != PackageManager.PERMISSION_GRANTED) {
+                    check_result = false;
+                    break;
+                }
             }
 
 
@@ -838,7 +874,6 @@ public class MainActivity extends AppCompatActivity implements MapView.MapViewEv
     }
 
     private void addCirclesParent() {
-        Log.d("hohohohoohhohhohooh", "-----------------------------------");
         MapCircle[] circles = new MapCircle[numLocParent];
         int radius;
         int total = sumParentInfoCount + sumParentWarningCount;

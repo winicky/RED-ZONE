@@ -19,4 +19,17 @@
 ```
 implementation 'com.squareup.retrofit2:retrofit:2.6.0'
 implementation 'com.squareup.retrofit2:converter-gson:2.6.0'
+implementation 'com.github.PhilJay:MPAndroidChart:v2.2.4'
+```
+
+* build.gradle (Project: redzone)
+
+```
+allprojects {
+    repositories {
+        google()
+        jcenter()
+        maven { url 'http://jitpack.io' }
+    }
+}
 ```
