@@ -1,4 +1,4 @@
-package com.example.redzone;
+package com.geovengers.redzone;
 
 import android.Manifest;
 import android.app.AlertDialog;
@@ -8,22 +8,31 @@ import android.content.pm.PackageManager;
 import android.content.res.AssetManager;
 import android.graphics.Color;
 import android.location.LocationManager;
-import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.TextView;
 import android.widget.Toast;
 
 
 import androidx.annotation.NonNull;
-import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
+
+import com.geovengers.redzone.ApiUtils;
+import com.geovengers.redzone.CircleRequest;
+import com.geovengers.redzone.CircleResponse;
+import com.geovengers.redzone.MsgRequest;
+import com.geovengers.redzone.R;
+import com.geovengers.redzone.Service;
+import com.geovengers.redzone.message_list;
+import com.geovengers.redzone.pie_chart;
+import com.geovengers.redzone.set_filter;
 
 import net.daum.mf.map.api.MapCircle;
 import net.daum.mf.map.api.MapPoint;
@@ -38,6 +47,7 @@ import java.io.InputStreamReader;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import retrofit2.Call;
@@ -89,12 +99,11 @@ public class MainActivity extends AppCompatActivity implements MapView.MapViewEv
     private static final int GPS_ENABLE_REQUEST_CODE = 2001;
     private static final int PERMISSIONS_REQUEST_CODE = 100;
     private static final int FILTER_REQUEST_CODE = 1001;
-    private static final int PIE_CHART_REQUEST_CODE = 3001;
+    private static final int PIECHART_REQUEST_CODE = 3001;
 
     String[] REQUIRED_PERMISSIONS  = {Manifest.permission.ACCESS_FINE_LOCATION};
 
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     protected void onCreate(Bundle savedInstanceState) {    //세로모드 가로모드 전환시에 전역변수 유지하고싶을때
         super.onCreate(savedInstanceState);
@@ -184,22 +193,21 @@ public class MainActivity extends AppCompatActivity implements MapView.MapViewEv
             checkRunTimePermission();
         }
 
+
         LocalDate today = LocalDate.now();
         LocalDate past = today.minusMonths(3);
         Log.d("LocalDate", "today = " + today.format(DateTimeFormatter.ISO_DATE));
         Log.d("LocalDate", "past = " + past.format(DateTimeFormatter.ISO_DATE));
 
+
+        // 앱 시작 후 레드 존 초기화 (initCircleAPI)
         String start_date = past.format(DateTimeFormatter.ISO_DATE);
         String end_date = today.format(DateTimeFormatter.ISO_DATE);
         String disaster_group;
-        List<String> disaster_type;
-        List<String> disaster_level;
+        List<String>disaster_type = new ArrayList<String>();
+        List<String>disaster_level = new ArrayList<String>();
 
-        // 앱 시작 후 레드 존 초기화 (initCircleAPI)
-        //start_date = new String("2020-03-01");
-        //end_date = new String("2020-05-24");
-        disaster_type = new ArrayList<String>();
-        disaster_level = new ArrayList<String>();
+
         for(int i=0; i<3; i++) {
             initRequest[i] = new CircleRequest();
             initRequest[i].setStart_date(start_date);
@@ -220,9 +228,9 @@ public class MainActivity extends AppCompatActivity implements MapView.MapViewEv
 
 
         // 필터 쿼리 (loadCircleAPI)
-        start_date = new String("2017-01-01");
+        start_date = new String("2020-01-01");
         end_date = new String("2020-05-10");
-        disaster_group = new String("질병");
+        disaster_group = new String("기상특보");
         disaster_type = new ArrayList<>();
         disaster_level = new ArrayList<>();
 
@@ -562,7 +570,6 @@ public class MainActivity extends AppCompatActivity implements MapView.MapViewEv
             }
         });
     }
-
     public void loadMsgAPI(MsgRequest msgRequest) {
         service.getMsgAPI(msgRequest).enqueue(new Callback<MsgResponse>() {
             @Override
@@ -575,7 +582,8 @@ public class MainActivity extends AppCompatActivity implements MapView.MapViewEv
 
                     Intent detail_intent = new Intent(getApplicationContext(), pie_chart.class);
                     detail_intent.putExtra("msgResponse", msgResponse);
-                    startActivityForResult(detail_intent, PIE_CHART_REQUEST_CODE);
+                    detail_intent.putExtra("location_name", getNearLocName(getNearLocCode()));
+                    startActivityForResult(detail_intent, PIECHART_REQUEST_CODE);
                 }else {
                     int statusCode  = response.code();
                     // handle request errors depending on status code
@@ -873,6 +881,26 @@ public class MainActivity extends AppCompatActivity implements MapView.MapViewEv
             }
             return locParent[minIndex].locationCode;
         }
+    }
+
+    private String getNearLocName(String location_code){
+        String temp = location_code;
+
+        if(mode == 0){
+            for(int i=0; i<numLocChild; i++){
+                if(temp.equals(locChild[i].locationCode)){
+                    return locChild[i].locationName;
+                }
+            }
+        }
+        else{
+            for(int i=0; i<numLocParent; i++){
+                if(temp.equals(locParent[i].locationCode)){
+                    return locParent[i].locationName;
+                }
+            }
+        }
+        return null;
     }
 
     private void addCirclesParent() {

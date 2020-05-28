@@ -1,10 +1,11 @@
-package com.example.redzone;
+package com.geovengers.redzone;
 
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.TextView;
 
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -26,6 +27,7 @@ public class pie_chart extends AppCompatActivity {
     private static final int MESSAGE_REQUEST_CODE = 3002;
     private MsgResponse msgResponse = new MsgResponse();
     private JSONObject json = new JSONObject();
+    private String location_name;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,9 +39,13 @@ public class pie_chart extends AppCompatActivity {
 
         Intent intent = getIntent();
 
+        location_name = intent.getExtras().getString("location_name");
         msgResponse = (MsgResponse)intent.getSerializableExtra("msgResponse");
         Log.d("3번", "여기");
         Log.d("MainActivity", "success" + msgResponse.getMessage().size());
+
+        TextView textView = (TextView)findViewById(R.id.location_name);
+        textView.setText(location_name);
 
         for(int i = 0; i < msgResponse.getMessage().size(); i++){
             int s = 0;
