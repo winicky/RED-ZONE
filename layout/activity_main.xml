@@ -54,18 +54,6 @@
             app:layout_constraintVertical_bias="0.989"
             app:srcCompat="@drawable/current_position_bg" />
 
-        <TextView
-            android:id="@+id/textView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="144dp"
-            android:layout_marginTop="176dp"
-            android:text="이홍석"
-            android:textColor="#BC1414"
-            android:textSize="30sp"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
         <Button
             android:id="@+id/detail_button"
             android:layout_width="wrap_content"

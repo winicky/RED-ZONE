@@ -1,4 +1,4 @@
-package com.example.redzone;
+package com.geovengers.redzone;
 
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;

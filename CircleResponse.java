@@ -1,4 +1,4 @@
-package com.example.redzone;
+package com.geovengers.redzone;
 
 import java.util.List;
 import com.google.gson.annotations.Expose;

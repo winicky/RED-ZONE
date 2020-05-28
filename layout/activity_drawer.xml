@@ -14,12 +14,6 @@
         android:layout_height="wrap_content"
         android:text="메뉴닫기"/>
 
-    <Button
-        android:id="@+id/text_list_button"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="문자보기" />
-
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

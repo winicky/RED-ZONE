@@ -1,4 +1,4 @@
-package com.example.redzone;
+package com.geovengers.redzone;
 
 import retrofit2.Call;
 import retrofit2.http.Body;
@@ -10,6 +10,6 @@ public interface Service {
             @Body CircleRequest circleRequest);
 
     @POST("/disasterInfo")
-    Call<CircleResponse> getMsgAPI(
+    Call<MsgResponse> getMsgAPI(
             @Body MsgRequest msgRequest);
 }

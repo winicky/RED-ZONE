@@ -1,4 +1,4 @@
-package com.example.redzone;
+package com.geovengers.redzone;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
