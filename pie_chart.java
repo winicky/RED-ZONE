@@ -1,4 +1,4 @@
-package com.geovengers.redzone;
+package com.example.redzone;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -23,7 +23,7 @@ import java.util.List;
 
 public class pie_chart extends AppCompatActivity {
 
-    public static final int REQUEST_CODE_FILTER = 2001;
+    private static final int MESSAGE_REQUEST_CODE = 3002;
     private MsgResponse msgResponse = new MsgResponse();
     private JSONObject json = new JSONObject();
 
@@ -89,7 +89,8 @@ public class pie_chart extends AppCompatActivity {
         text_list_button.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 Intent message_intent = new Intent(getApplicationContext(), message_list.class);
-                startActivityForResult(message_intent, REQUEST_CODE_FILTER);
+                message_intent.putExtra("msgResponse", msgResponse);
+                startActivityForResult(message_intent, MESSAGE_REQUEST_CODE);
             }
         });
     }
