@@ -26,18 +26,18 @@ import androidx.appcompat.app.AppCompatActivity;
             setContentView(R.layout.activity_message_list);
 
             SearchView search_view = (SearchView)findViewById(R.id.search_view);
-            LinearLayout linearLayout = (LinearLayout)findViewById(R.id.linearLayout);
+            final LinearLayout linearLayout = (LinearLayout)findViewById(R.id.linearLayout);
 
             Intent intent = getIntent();
             msgResponse = (MsgResponse)intent.getSerializableExtra("msgResponse");
 
             for(int i=0; i<msgResponse.getMessage().size(); i++){
-                final String temp = "["+msgResponse.getMessage().get(i).getDisasterGroup()+"]["
-                        +msgResponse.getMessage().get(i).getDisasterLevel()+"]["
-                        +msgResponse.getMessage().get(i).getLocationName()+"]"
+                final String temp = "["+msgResponse.getMessage().get(msgResponse.getMessage().size() - i - 1).getDisasterGroup()+"]["
+                        +msgResponse.getMessage().get(msgResponse.getMessage().size() - i - 1).getDisasterLevel()+"]["
+                        +msgResponse.getMessage().get(msgResponse.getMessage().size() - i - 1).getLocationName()+"]"
                         +"\n["
-                        +msgResponse.getMessage().get(i).getMsgCreateDt()+"]\n"
-                        +msgResponse.getMessage().get(i).getMsg();
+                        +msgResponse.getMessage().get(msgResponse.getMessage().size() - i - 1).getMsgCreateDt()+"]\n"
+                        +msgResponse.getMessage().get(msgResponse.getMessage().size() - i - 1).getMsg();
                 Button btn = new Button(this);
                 btn.setId(i);
                 btn.setText(temp);
@@ -63,6 +63,32 @@ import androidx.appcompat.app.AppCompatActivity;
 
                 @Override
                 public boolean onQueryTextChange(String newText) {
+                    linearLayout.removeAllViewsInLayout();
+
+                    for(int i=0; i<msgResponse.getMessage().size(); i++){
+                        final String temp = "["+msgResponse.getMessage().get(msgResponse.getMessage().size() - i - 1).getDisasterGroup()+"]["
+                                +msgResponse.getMessage().get(msgResponse.getMessage().size() - i - 1).getDisasterLevel()+"]["
+                                +msgResponse.getMessage().get(msgResponse.getMessage().size() - i - 1).getLocationName()+"]"
+                                +"\n["
+                                +msgResponse.getMessage().get(msgResponse.getMessage().size() - i - 1).getMsgCreateDt()+"]\n"
+                                +msgResponse.getMessage().get(msgResponse.getMessage().size() - i - 1).getMsg();
+                        if(temp.contains(newText)) {
+                            Button btn = new Button(getBaseContext());
+                            btn.setId(i);
+                            btn.setText(temp);
+                            btn.setEllipsize(TextUtils.TruncateAt.END);
+                            btn.setMaxLines(3);
+                            btn.setGravity(Gravity.LEFT);
+                            linearLayout.addView(btn);
+
+                            btn.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    Toast.makeText(message_list.this, temp, Toast.LENGTH_SHORT).show();
+                                }
+                            });
+                        }
+                    }
 
                     return false;
                 }
