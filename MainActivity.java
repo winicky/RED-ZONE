@@ -14,7 +14,6 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
-import android.widget.TextView;
 import android.widget.Toast;
 
 
@@ -23,16 +22,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
-
-import com.geovengers.redzone.ApiUtils;
-import com.geovengers.redzone.CircleRequest;
-import com.geovengers.redzone.CircleResponse;
-import com.geovengers.redzone.MsgRequest;
-import com.geovengers.redzone.R;
-import com.geovengers.redzone.Service;
-import com.geovengers.redzone.message_list;
-import com.geovengers.redzone.pie_chart;
-import com.geovengers.redzone.set_filter;
 
 import net.daum.mf.map.api.MapCircle;
 import net.daum.mf.map.api.MapPoint;
@@ -47,7 +36,6 @@ import java.io.InputStreamReader;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import retrofit2.Call;
@@ -71,17 +59,23 @@ public class MainActivity extends AppCompatActivity implements MapView.MapViewEv
 
     private Service service = ApiUtils.getService();
 
-    private CircleRequest[] initRequest = new CircleRequest[3];
+    private CircleRequest[] initCircleRequest = new CircleRequest[3];
+    private MsgRequest[] initMsgRequest = new MsgRequest[3];
     private CircleRequest circleRequest = new CircleRequest();
     private MsgRequest msgRequest = new MsgRequest();
     private MsgResponse msgResponse = new MsgResponse();
+    private MsgResponse[] tmpMsgResponse = new MsgResponse[3];
 
     private DrawerLayout drawerLayout;
     private View drawerView;
     private MapView mMapView;
     private MapPoint tempMapPoint;
+    private MapPoint filterMapPoint;
     private int isStart;
+    private int isFirstMap = 0;
     private int mode = 0; // 0(시군구) = zoom level 0~8, 1(도) = zoom level 9~
+
+    private String testString;
 
     public static final int numLocParent = 16;
     public static final int numLocChild = 229;
@@ -201,30 +195,52 @@ public class MainActivity extends AppCompatActivity implements MapView.MapViewEv
 
 
         // 앱 시작 후 레드 존 초기화 (initCircleAPI)
-        String start_date = past.format(DateTimeFormatter.ISO_DATE);
-        String end_date = today.format(DateTimeFormatter.ISO_DATE);
+        //String start_date = past.format(DateTimeFormatter.ISO_DATE);
+        //String end_date = today.format(DateTimeFormatter.ISO_DATE);
+        String start_date = "2019-01-01";
+        String end_date = "2020-02-20";
         String disaster_group;
         List<String>disaster_type = new ArrayList<String>();
         List<String>disaster_level = new ArrayList<String>();
 
 
         for(int i=0; i<3; i++) {
-            initRequest[i] = new CircleRequest();
-            initRequest[i].setStart_date(start_date);
-            initRequest[i].setEnd_date(end_date);
-            initRequest[i].setDisaster_type(disaster_type);
-            initRequest[i].setDisaster_level(disaster_level);
+            initCircleRequest[i] = new CircleRequest();
+            initCircleRequest[i].setStart_date(start_date);
+            initCircleRequest[i].setEnd_date(end_date);
+            initCircleRequest[i].setDisaster_type(disaster_type);
+            initCircleRequest[i].setDisaster_level(disaster_level);
+
+            initMsgRequest[i] = new MsgRequest();
+            initMsgRequest[i].setStart_date(start_date);
+            initMsgRequest[i].setEnd_date(end_date);
+            initMsgRequest[i].setDisaster_type(disaster_type);
+            initMsgRequest[i].setDisaster_level(disaster_level);
         }
-        initRequest[0].setDisaster_group("기상특보");
-        initRequest[1].setDisaster_group("질병");
-        initRequest[2].setDisaster_group("other");
+        initCircleRequest[0].setDisaster_group("기상특보");
+        initCircleRequest[1].setDisaster_group("질병");
+        initCircleRequest[2].setDisaster_group("other");
+
+        initMsgRequest[0].setDisaster_group("기상특보");
+        initMsgRequest[1].setDisaster_group("질병");
+        initMsgRequest[2].setDisaster_group("other");
 
         clearCount();
-        initCircleAPI(initRequest[0]);
-        initCircleAPI(initRequest[1]);
-        initCircleAPI(initRequest[2]);
+        initCircleAPI(initCircleRequest[0]);
+        initCircleAPI(initCircleRequest[1]);
+        initCircleAPI(initCircleRequest[2]);
 
         addCirclesChild();
+
+        msgRequest.setStart_date(start_date);
+        msgRequest.setEnd_date(end_date);
+        msgRequest.setDisaster_type(disaster_type);
+        msgRequest.setDisaster_level(disaster_level);
+        msgRequest.setDisaster_group("질병");
+
+
+
+
 
 
         // 필터 쿼리 (loadCircleAPI)
@@ -262,13 +278,16 @@ public class MainActivity extends AppCompatActivity implements MapView.MapViewEv
             @Override
             public void onClick(View v) {
                 msgRequest.setLocation_code(getNearLocCode());
-                msgRequest.setStart_date(circleRequest.getStart_date());
-                msgRequest.setEnd_date(circleRequest.getEnd_date());
-                msgRequest.setDisaster_group(circleRequest.getDisaster_group());
-                msgRequest.setDisaster_type(circleRequest.getDisaster_type());
-                msgRequest.setDisaster_level(circleRequest.getDisaster_level());
-
-                loadMsgAPI(msgRequest);
+                if(isFirstMap == 0) {
+                    initMsgRequest[0].setLocation_code(getNearLocCode());
+                    initMsgRequest[1].setLocation_code(getNearLocCode());
+                    initMsgRequest[2].setLocation_code(getNearLocCode());
+                    initMsgAPI(initMsgRequest);
+                    //initMsgAPI(initMsgRequest[1]);
+                    //initMsgAPI(initMsgRequest[2]);
+                }
+                else
+                    loadMsgAPI(msgRequest);
                 Log.d("1번", "여기");
 
             }
@@ -583,6 +602,7 @@ public class MainActivity extends AppCompatActivity implements MapView.MapViewEv
                     Intent detail_intent = new Intent(getApplicationContext(), pie_chart.class);
                     detail_intent.putExtra("msgResponse", msgResponse);
                     detail_intent.putExtra("location_name", getNearLocName(getNearLocCode()));
+                    detail_intent.putExtra("mode", 1);
                     startActivityForResult(detail_intent, PIECHART_REQUEST_CODE);
                 }else {
                     int statusCode  = response.code();
@@ -839,6 +859,17 @@ public class MainActivity extends AppCompatActivity implements MapView.MapViewEv
                 }
 
                 break;
+
+            case FILTER_REQUEST_CODE :
+                if (resultCode == RESULT_OK) {
+                    Log.d("여기여기ㅣ여기", "호호22222");
+                    msgRequest = (MsgRequest)data.getSerializableExtra("TOTAL_BUNDLE");
+                    Log.d("여기여기ㅣ여기", "호호3333" + msgRequest.getLocation_code());
+                    changeFilterMapPoint(msgRequest.getLocation_code());
+                    isFirstMap++;
+                }
+
+                break;
         }
     }
 
@@ -854,6 +885,76 @@ public class MainActivity extends AppCompatActivity implements MapView.MapViewEv
         x = mMapView.getMapCenterPoint().getMapPointGeoCoord().latitude;
         y = mMapView.getMapCenterPoint().getMapPointGeoCoord().longitude;
         return Math.abs(latitude - x) + Math.abs(longitude - y);
+    }
+
+    private void initMsgAPI(MsgRequest[] initMsgRequest){
+        final Intent msg_intent = new Intent(getApplicationContext(), pie_chart.class);
+        final int[] count = {0};
+        for(int i=0; i<3; i++) {
+            final int j = i;
+            Log.d("여기는??", "여기도");
+            service.getMsgAPI(initMsgRequest[i]).enqueue(new Callback<MsgResponse>() {
+                @Override
+                public synchronized void onResponse(Call<MsgResponse> call, Response<MsgResponse> response) {
+                    if (response.isSuccessful()) {
+
+                        Log.d("여기는???", "여기도ll");
+                        tmpMsgResponse[j] = response.body();
+                        Log.d("여기여기", "제발" + tmpMsgResponse[j].getDisasterGroup());
+
+                        if(j == 0) {
+                            msg_intent.putExtra("msgResponse0", tmpMsgResponse[j]);
+                            Log.d("0 집어넣기", "0 집어넣기");
+                            count[0]++;
+                        }
+                        else if(j == 1) {
+                            msg_intent.putExtra("msgResponse1", tmpMsgResponse[j]);
+                            Log.d("1 집어넣기", "1 집어넣기");
+                            count[0]++;
+                        }
+                        else if(j == 2){
+                            msg_intent.putExtra("msgResponse2", tmpMsgResponse[j]);
+                            Log.d("2 집어넣기", "2 집어넣기");
+                            count[0]++;
+                        }
+
+                        if(count[0] == 3) {
+                            Log.d("intent 넘기기", "intent 넘기기");
+                            Log.d("?????", "?????" + getNearLocCode());
+                            msg_intent.putExtra("location_name", getNearLocName(getNearLocCode()));
+                            msg_intent.putExtra("mode", 0);
+                            startActivityForResult(msg_intent, PIECHART_REQUEST_CODE);
+                        }
+
+                    } else {
+                        int statusCode = response.code();
+                        // handle request errors depending on status code
+                    }
+                }
+
+
+                @Override
+                public void onFailure(Call<MsgResponse> call, Throwable t) {
+                    //showErrorMessage();
+                    Log.d("MainActivity", "error loading from API");
+
+                }
+            });
+
+/*
+            Intent detail_intent = new Intent(getApplicationContext(), pie_chart.class);
+            detail_intent.putExtra("msgResponse0", tmpMsgResponse[0]);
+            Log.d("여기여기", "설마" + tmpMsgResponse[0].getDisasterGroup());
+            detail_intent.putExtra("msgResponse1", tmpMsgResponse[1]);
+            Log.d("여기여기", "설마" + tmpMsgResponse[1].getDisasterGroup());
+            detail_intent.putExtra("msgResponse2", tmpMsgResponse[2]);
+            Log.d("여기여기", "설마" + tmpMsgResponse[2].getDisasterGroup());
+            detail_intent.putExtra("location_name", getNearLocName(getNearLocCode()));
+            detail_intent.putExtra("mode", 0);
+            startActivityForResult(detail_intent, PIECHART_REQUEST_CODE);
+*/
+        }
+
     }
 
     private String getNearLocCode() {
@@ -901,6 +1002,28 @@ public class MainActivity extends AppCompatActivity implements MapView.MapViewEv
             }
         }
         return null;
+    }
+
+    private void changeFilterMapPoint(String location_code){
+
+        String temp = location_code;
+        Log.d("하하", "5555" + temp.substring(2,10));
+        if(temp.substring(2,10).equals("00000000")){
+            for(int i=0; i<numLocParent; i++) {
+                if (temp.equals(locParent[i].locationCode)) {
+                    Log.d("하하z", "6666");
+                    mMapView.setMapCenterPointAndZoomLevel(MapPoint.mapPointWithGeoCoord(locParent[i].latitude, locParent[i].longitude), 9, false);
+                }
+            }
+        }
+        else{
+            for(int i=0; i<numLocChild; i++){
+                if(temp.equals(locChild[i].locationCode)){
+                    Log.d("하하zz", "6666");
+                    mMapView.setMapCenterPointAndZoomLevel(MapPoint.mapPointWithGeoCoord(locChild[i].latitude, locChild[i].longitude), 5, false);
+                }
+            }
+        }
     }
 
     private void addCirclesParent() {

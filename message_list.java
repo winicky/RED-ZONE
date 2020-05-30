@@ -16,82 +16,93 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-    public class message_list extends AppCompatActivity {
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
-        private MsgResponse msgResponse = new MsgResponse();
+public class message_list extends AppCompatActivity {
 
-        @Override
-        protected void onCreate(Bundle savedInstanceState) {
-            super.onCreate(savedInstanceState);
-            setContentView(R.layout.activity_message_list);
+    private MsgResponse msgResponse = new MsgResponse();
+    private List<String> messagesForSort = new ArrayList<String>();
 
-            SearchView search_view = (SearchView)findViewById(R.id.search_view);
-            final LinearLayout linearLayout = (LinearLayout)findViewById(R.id.linearLayout);
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_message_list);
 
-            Intent intent = getIntent();
-            msgResponse = (MsgResponse)intent.getSerializableExtra("msgResponse");
+        SearchView search_view = (SearchView)findViewById(R.id.search_view);
+        final LinearLayout linearLayout = (LinearLayout)findViewById(R.id.linearLayout);
 
-            for(int i=0; i<msgResponse.getMessage().size(); i++){
-                final String temp = "["+msgResponse.getMessage().get(msgResponse.getMessage().size() - i - 1).getDisasterGroup()+"]["
-                        +msgResponse.getMessage().get(msgResponse.getMessage().size() - i - 1).getDisasterLevel()+"]["
-                        +msgResponse.getMessage().get(msgResponse.getMessage().size() - i - 1).getLocationName()+"]"
-                        +"\n["
-                        +msgResponse.getMessage().get(msgResponse.getMessage().size() - i - 1).getMsgCreateDt()+"]\n"
-                        +msgResponse.getMessage().get(msgResponse.getMessage().size() - i - 1).getMsg();
-                Button btn = new Button(this);
-                btn.setId(i);
-                btn.setText(temp);
-                btn.setEllipsize(TextUtils.TruncateAt.END);
-                btn.setMaxLines(3);
-                btn.setGravity(Gravity.LEFT);
-                linearLayout.addView(btn);
+        Intent intent = getIntent();
+        msgResponse = (MsgResponse)intent.getSerializableExtra("msgResponse");
 
-                btn.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        Toast.makeText(message_list.this,temp, Toast.LENGTH_SHORT).show();
-                    }
-                });
-            }
 
-            search_view.setOnQueryTextListener(new SearchView.OnQueryTextListener(){
+        for(int i=0; i<msgResponse.getMessage().size(); i++){
+            messagesForSort.add(i,"["+msgResponse.getMessage().get(msgResponse.getMessage().size() - i - 1).getMsgCreateDt()+"]\n["
+                    +msgResponse.getMessage().get(msgResponse.getMessage().size() - i - 1).getDisasterGroup()+"]["
+                    +msgResponse.getMessage().get(msgResponse.getMessage().size() - i - 1).getDisasterLevel()+"]["
+                    +msgResponse.getMessage().get(msgResponse.getMessage().size() - i - 1).getLocationName()+"]\n"
+                    +msgResponse.getMessage().get(msgResponse.getMessage().size() - i - 1).getMsg());
+        }
+        Collections.sort(messagesForSort);
+        Collections.reverse(messagesForSort);
+
+        for(int i=0; i<msgResponse.getMessage().size(); i++){
+            final String temp = messagesForSort.get(i);
+            Button btn = new Button(this);
+            btn.setId(i);
+            btn.setText(temp);
+            btn.setEllipsize(TextUtils.TruncateAt.END);
+            btn.setMaxLines(3);
+            btn.setGravity(Gravity.LEFT);
+            linearLayout.addView(btn);
+
+            btn.setOnClickListener(new View.OnClickListener() {
                 @Override
-                public boolean onQueryTextSubmit(String query) {
-
-                    return true;
-                }
-
-                @Override
-                public boolean onQueryTextChange(String newText) {
-                    linearLayout.removeAllViewsInLayout();
-
-                    for(int i=0; i<msgResponse.getMessage().size(); i++){
-                        final String temp = "["+msgResponse.getMessage().get(msgResponse.getMessage().size() - i - 1).getDisasterGroup()+"]["
-                                +msgResponse.getMessage().get(msgResponse.getMessage().size() - i - 1).getDisasterLevel()+"]["
-                                +msgResponse.getMessage().get(msgResponse.getMessage().size() - i - 1).getLocationName()+"]"
-                                +"\n["
-                                +msgResponse.getMessage().get(msgResponse.getMessage().size() - i - 1).getMsgCreateDt()+"]\n"
-                                +msgResponse.getMessage().get(msgResponse.getMessage().size() - i - 1).getMsg();
-                        if(temp.contains(newText)) {
-                            Button btn = new Button(getBaseContext());
-                            btn.setId(i);
-                            btn.setText(temp);
-                            btn.setEllipsize(TextUtils.TruncateAt.END);
-                            btn.setMaxLines(3);
-                            btn.setGravity(Gravity.LEFT);
-                            linearLayout.addView(btn);
-
-                            btn.setOnClickListener(new View.OnClickListener() {
-                                @Override
-                                public void onClick(View v) {
-                                    Toast.makeText(message_list.this, temp, Toast.LENGTH_SHORT).show();
-                                }
-                            });
-                        }
-                    }
-
-                    return false;
+                public void onClick(View v) {
+                    Toast.makeText(message_list.this,temp, Toast.LENGTH_SHORT).show();
                 }
             });
         }
+
+        search_view.setOnQueryTextListener(new SearchView.OnQueryTextListener(){
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+
+                return true;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                linearLayout.removeAllViews();
+
+                for(int i=0; i<msgResponse.getMessage().size(); i++){
+                    final String temp = messagesForSort.get(i);
+                    if(temp.contains(newText)) {
+                        Button btn = new Button(getBaseContext());
+                        btn.setId(i);
+                        btn.setText(temp);
+                        btn.setEllipsize(TextUtils.TruncateAt.END);
+                        btn.setMaxLines(3);
+                        btn.setGravity(Gravity.LEFT);
+                        linearLayout.addView(btn);
+
+                        btn.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                Toast.makeText(message_list.this, temp, Toast.LENGTH_SHORT).show();
+                            }
+                        });
+                    }
+                }
+
+                return false;
+            }
+        });
+    }
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+    }
+
 }

@@ -26,6 +26,8 @@ public class pie_chart extends AppCompatActivity {
 
     private static final int MESSAGE_REQUEST_CODE = 3002;
     private MsgResponse msgResponse = new MsgResponse();
+    private MsgResponse[] tmpMsgResponse = new MsgResponse[3];
+    private List<Message> message = new ArrayList<Message>();
     private JSONObject json = new JSONObject();
     private String location_name;
 
@@ -39,10 +41,34 @@ public class pie_chart extends AppCompatActivity {
 
         Intent intent = getIntent();
 
-        location_name = intent.getExtras().getString("location_name");
-        msgResponse = (MsgResponse)intent.getSerializableExtra("msgResponse");
-        Log.d("3번", "여기");
-        Log.d("MainActivity", "success" + msgResponse.getMessage().size());
+        if(intent.getExtras().getInt("mode") == 0){
+            location_name = intent.getExtras().getString("location_name");
+
+            tmpMsgResponse[0] = (MsgResponse) intent.getSerializableExtra("msgResponse0");
+            tmpMsgResponse[1] = (MsgResponse) intent.getSerializableExtra("msgResponse1");
+            tmpMsgResponse[2] = (MsgResponse) intent.getSerializableExtra("msgResponse2");
+            /*
+            Log.d("3번", "집가자" + location_name);
+
+            Log.d("3번", "집가자" + tmpMsgResponse[0].getDisasterGroup());
+            Log.d("3번", "집가자" + tmpMsgResponse[1].getDisasterGroup());
+            Log.d("3번", "집가자" + tmpMsgResponse[2].getDisasterGroup());
+               */
+            for(int i=0; i<3; i++){
+                if(tmpMsgResponse[i].getMessage().size() != 0){
+                    message.addAll(tmpMsgResponse[i].getMessage());
+                }
+            }
+
+            //message.addAll(tmpMsgResponse[0].getMessage());
+            msgResponse.setMessage(message);
+        }
+        else {
+            location_name = intent.getExtras().getString("location_name");
+            msgResponse = (MsgResponse) intent.getSerializableExtra("msgResponse");
+            Log.d("3번", "여기");
+            Log.d("MainActivity", "success" + msgResponse.getMessage().size());
+        }
 
         TextView textView = (TextView)findViewById(R.id.location_name);
         textView.setText(location_name);
@@ -100,4 +126,10 @@ public class pie_chart extends AppCompatActivity {
             }
         });
     }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+    }
+
 }
