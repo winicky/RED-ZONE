@@ -80,6 +80,7 @@ public class MainActivity extends AppCompatActivity implements MapView.MapViewEv
     private View drawerView;
     private MapView mMapView;
     private MapPoint tempMapPoint;
+    private MapPoint filterMapPoint;
     private int isStart;
     private int mode = 0; // 0(시군구) = zoom level 0~8, 1(도) = zoom level 9~
 
@@ -261,13 +262,14 @@ public class MainActivity extends AppCompatActivity implements MapView.MapViewEv
         detail_button.setOnClickListener(new OnClickListener(){
             @Override
             public void onClick(View v) {
+                /*
                 msgRequest.setLocation_code(getNearLocCode());
                 msgRequest.setStart_date(circleRequest.getStart_date());
                 msgRequest.setEnd_date(circleRequest.getEnd_date());
                 msgRequest.setDisaster_group(circleRequest.getDisaster_group());
                 msgRequest.setDisaster_type(circleRequest.getDisaster_type());
                 msgRequest.setDisaster_level(circleRequest.getDisaster_level());
-
+*/
                 loadMsgAPI(msgRequest);
                 Log.d("1번", "여기");
 
@@ -839,6 +841,15 @@ public class MainActivity extends AppCompatActivity implements MapView.MapViewEv
                 }
 
                 break;
+
+            case FILTER_REQUEST_CODE :
+                if (resultCode == RESULT_OK) {
+                    msgRequest = (MsgRequest)data.getSerializableExtra("TOTAL_BUNDLE");
+                    changeFilterMapPoint(msgRequest.getLocation_code());
+                    mMapView.setMapCenterPointAndZoomLevel(filterMapPoint, 5, false);
+                }
+
+                break;
         }
     }
 
@@ -901,6 +912,26 @@ public class MainActivity extends AppCompatActivity implements MapView.MapViewEv
             }
         }
         return null;
+    }
+
+    private void changeFilterMapPoint(String location_code){
+
+        String temp = location_code;
+
+        if(mode == 0){
+            for(int i=0; i<numLocChild; i++){
+                if(temp.equals(locChild[i].locationCode)){
+                    filterMapPoint = MapPoint.mapPointWithGeoCoord(locChild[i].latitude, locChild[i].longitude);
+                }
+            }
+        }
+        else{
+            for(int i=0; i<numLocParent; i++){
+                if(temp.equals(locParent[i].locationCode)){
+                    filterMapPoint = MapPoint.mapPointWithGeoCoord(locParent[i].latitude, locParent[i].longitude);
+                }
+            }
+        }
     }
 
     private void addCirclesParent() {

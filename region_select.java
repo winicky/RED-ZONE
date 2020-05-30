@@ -150,137 +150,142 @@ public class region_select extends AppCompatActivity {
         ImageButton b_apply = (ImageButton) findViewById(R.id.apply);               //  필터 적용 버튼
         b_apply.setOnClickListener(new Button.OnClickListener() {                   //  적용 버튼을 누르면
             public void onClick(View v) {                                           //  번들에 데이터(이름, 코드)를 담아 finish
-                switch (index_first) {                                              //  최종 선택의 1차지역 인덱스를 받아
-                    case 0:                                                         //  케이스별로 구분
-                        for (i = 0; i < NUM_SEOUL; i++) {                           //  해당 1차 지역 내에 있는 2차 지역의 이름들과 비교해서
-                            if (name_seoul[i].equals(arg1.getText().toString())) {  //  같으면
-                                parameter_code = code_seoul[i];                     //  번들에 넣을 코드 변수에 해당 2차지역 코드를 입력
-                            }                                                       //  이하 각 1차지역마다 코드 반복
-                        }
-                        break;
-                    case 1:
-                        for (i = 0; i < NUM_PUSAN; i++) {
-                            if (name_pusan[i].equals(arg1.getText().toString())) {
-                                parameter_code = code_pusan[i];
-                            }
-                        }
-                        break;
-                    case 2:
-                        for (i = 0; i < NUM_DAEGU; i++) {
-                            if (name_daegu[i].equals(arg1.getText().toString())) {
-                                parameter_code = code_daegu[i];
-                            }
-                        }
-                        break;
-                    case 3:
-                        for (i = 0; i < NUM_INCHEON; i++) {
-                            if (name_incheon[i].equals(arg1.getText().toString())) {
-                                parameter_code = code_incheon[i];
-                            }
-                        }
-                        break;
-                    case 4:
-                        for (i = 0; i < NUM_GWANGJU; i++) {
-                            if (name_gwangju[i].equals(arg1.getText().toString())) {
-                                parameter_code = code_gwangju[i];
-                            }
-                        }
-                        break;
-                    case 5:
-                        for (i = 0; i < NUM_DAEJEON; i++) {
-                            if (name_daejeon[i].equals(arg1.getText().toString())) {
-                                parameter_code = code_daejeon[i];
-                            }
-                        }
-                        break;
-                    case 6:
-                        for (i = 0; i < NUM_ULSAN; i++) {
-                            if (name_ulsan[i].equals(arg1.getText().toString())) {
-                                parameter_code = code_ulsan[i];
-                            }
-                        }
-                        break;
-                    case 7:
-                        for (i = 0; i < NUM_SEJONG; i++) {
-                            if (name_sejong[i].equals(arg1.getText().toString())) {
-                                parameter_code = code_sejong[i];
-                            }
-                        }
-                        break;
-                    case 8:
-                        for (i = 0; i < NUM_GYEONGGI; i++) {
-                            if (name_gyeonggi[i].equals(arg1.getText().toString())) {
-                                parameter_code = code_gyeonggi[i];
-                            }
-                        }
-                        break;
-                    case 9:
-                        for (i = 0; i < NUM_GANGWON; i++) {
-                            if (name_gangwon[i].equals(arg1.getText().toString())) {
-                                parameter_code = code_gangwon[i];
-                            }
-                        }
-                        break;
-                    case 10:
-                        for (i = 0; i < NUM_CHUNGBUK; i++) {
-                            if (name_chungbuk[i].equals(arg1.getText().toString())) {
-                                parameter_code = code_chungbuk[i];
-                            }
-                        }
-                        break;
-                    case 11:
-                        for (i = 0; i < NUM_CHUNGNAM; i++) {
-                            if (name_chungnam[i].equals(arg1.getText().toString())) {
-                                parameter_code = code_chungnam[i];
-                            }
-                        }
-                        break;
-                    case 12:
-                        for (i = 0; i < NUM_JEONBUK; i++) {
-                            if (name_jeonbuk[i].equals(arg1.getText().toString())) {
-                                parameter_code = code_jeonbuk[i];
-                            }
-                        }
-                        break;
-                    case 13:
-                        for (i = 0; i < NUM_JEONNAM; i++) {
-                            if (name_jeonnam[i].equals(arg1.getText().toString())) {
-                                parameter_code = code_jeonnam[i];
-                            }
-                        }
-                        break;
-                    case 14:
-                        for (i = 0; i < NUM_GYEONGBUK; i++) {
-                            if (name_gyeongbuk[i].equals(arg1.getText().toString())) {
-                                parameter_code = code_gyeongbuk[i];
-                            }
-                        }
-                        break;
-                    case 15:
-                        for (i = 0; i < NUM_GYEONGNAM; i++) {
-                            if (name_gyeongnam[i].equals(arg1.getText().toString())) {
-                                parameter_code = code_gyeongnam[i];
-                            }
-                        }
-                        break;
-                    case 16:
-                        for (i = 0; i < NUM_JEJU; i++) {
-                            if (name_jeju[i].equals(arg1.getText().toString())) {
-                                parameter_code = code_jeju[i];
-                            }
-                        }
-                        break;
+                if (arg1 == null){
+                    Toast.makeText(getApplicationContext(), "지역을 선택해주세요", Toast.LENGTH_LONG).show();
                 }
-                //  여기부터는 인텐트에 번들을 담아 다시 쏴야되는데 아직 못짬
-                
+                else {
+                    switch (index_first) {                                              //  최종 선택의 1차지역 인덱스를 받아
+                        case 0:                                                         //  케이스별로 구분
+                            for (i = 0; i < NUM_SEOUL; i++) {                           //  해당 1차 지역 내에 있는 2차 지역의 이름들과 비교해서
+                                if (name_seoul[i].equals(arg1.getText().toString())) {  //  같으면
+                                    parameter_code = code_seoul[i];                     //  번들에 넣을 코드 변수에 해당 2차지역 코드를 입력
+                                }                                                       //  이하 각 1차지역마다 코드 반복
+                            }
+                            break;
+                        case 1:
+                            for (i = 0; i < NUM_PUSAN; i++) {
+                                if (name_pusan[i].equals(arg1.getText().toString())) {
+                                    parameter_code = code_pusan[i];
+                                }
+                            }
+                            break;
+                        case 2:
+                            for (i = 0; i < NUM_DAEGU; i++) {
+                                if (name_daegu[i].equals(arg1.getText().toString())) {
+                                    parameter_code = code_daegu[i];
+                                }
+                            }
+                            break;
+                        case 3:
+                            for (i = 0; i < NUM_INCHEON; i++) {
+                                if (name_incheon[i].equals(arg1.getText().toString())) {
+                                    parameter_code = code_incheon[i];
+                                }
+                            }
+                            break;
+                        case 4:
+                            for (i = 0; i < NUM_GWANGJU; i++) {
+                                if (name_gwangju[i].equals(arg1.getText().toString())) {
+                                    parameter_code = code_gwangju[i];
+                                }
+                            }
+                            break;
+                        case 5:
+                            for (i = 0; i < NUM_DAEJEON; i++) {
+                                if (name_daejeon[i].equals(arg1.getText().toString())) {
+                                    parameter_code = code_daejeon[i];
+                                }
+                            }
+                            break;
+                        case 6:
+                            for (i = 0; i < NUM_ULSAN; i++) {
+                                if (name_ulsan[i].equals(arg1.getText().toString())) {
+                                    parameter_code = code_ulsan[i];
+                                }
+                            }
+                            break;
+                        case 7:
+                            for (i = 0; i < NUM_SEJONG; i++) {
+                                if (name_sejong[i].equals(arg1.getText().toString())) {
+                                    parameter_code = code_sejong[i];
+                                }
+                            }
+                            break;
+                        case 8:
+                            for (i = 0; i < NUM_GYEONGGI; i++) {
+                                if (name_gyeonggi[i].equals(arg1.getText().toString())) {
+                                    parameter_code = code_gyeonggi[i];
+                                }
+                            }
+                            break;
+                        case 9:
+                            for (i = 0; i < NUM_GANGWON; i++) {
+                                if (name_gangwon[i].equals(arg1.getText().toString())) {
+                                    parameter_code = code_gangwon[i];
+                                }
+                            }
+                            break;
+                        case 10:
+                            for (i = 0; i < NUM_CHUNGBUK; i++) {
+                                if (name_chungbuk[i].equals(arg1.getText().toString())) {
+                                    parameter_code = code_chungbuk[i];
+                                }
+                            }
+                            break;
+                        case 11:
+                            for (i = 0; i < NUM_CHUNGNAM; i++) {
+                                if (name_chungnam[i].equals(arg1.getText().toString())) {
+                                    parameter_code = code_chungnam[i];
+                                }
+                            }
+                            break;
+                        case 12:
+                            for (i = 0; i < NUM_JEONBUK; i++) {
+                                if (name_jeonbuk[i].equals(arg1.getText().toString())) {
+                                    parameter_code = code_jeonbuk[i];
+                                }
+                            }
+                            break;
+                        case 13:
+                            for (i = 0; i < NUM_JEONNAM; i++) {
+                                if (name_jeonnam[i].equals(arg1.getText().toString())) {
+                                    parameter_code = code_jeonnam[i];
+                                }
+                            }
+                            break;
+                        case 14:
+                            for (i = 0; i < NUM_GYEONGBUK; i++) {
+                                if (name_gyeongbuk[i].equals(arg1.getText().toString())) {
+                                    parameter_code = code_gyeongbuk[i];
+                                }
+                            }
+                            break;
+                        case 15:
+                            for (i = 0; i < NUM_GYEONGNAM; i++) {
+                                if (name_gyeongnam[i].equals(arg1.getText().toString())) {
+                                    parameter_code = code_gyeongnam[i];
+                                }
+                            }
+                            break;
+                        case 16:
+                            for (i = 0; i < NUM_JEJU; i++) {
+                                if (name_jeju[i].equals(arg1.getText().toString())) {
+                                    parameter_code = code_jeju[i];
+                                }
+                            }
+                            break;
+                    }
+                    //  여기부터는 인텐트에 번들을 담아 다시 쏴야되는데 아직 못짬
 
-                Intent return_region_intent = new Intent(getApplicationContext(), set_filter.class);
-                Bundle region_bundle = new Bundle();
-                region_bundle.putString("PARAMETER_CODE", parameter_code);
-                region_bundle.putString("PARAMETER_NAME", parameter_name);
-                return_region_intent.putExtra("REGION_BUNDLE", region_bundle);
-                setResult(RESULT_OK, return_region_intent);
-                finish();
+
+                    Intent return_region_intent = new Intent(getApplicationContext(), set_filter.class);
+                    Bundle region_bundle = new Bundle();
+                    region_bundle.putString("PARAMETER_CODE", parameter_code);
+                    region_bundle.putString("PARAMETER_NAME", parameter_name);
+                    return_region_intent.putExtra("REGION_BUNDLE", region_bundle);
+                    setResult(RESULT_OK, return_region_intent);
+                    finish();
+                }
             }
         });
 

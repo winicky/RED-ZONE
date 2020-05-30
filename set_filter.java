@@ -2,6 +2,7 @@ package com.geovengers.redzone;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
@@ -11,7 +12,9 @@ import android.widget.ToggleButton;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 public class set_filter extends AppCompatActivity {
 
@@ -44,10 +47,13 @@ public class set_filter extends AppCompatActivity {
     int num_first = 17;
     int i= 0;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_set_filter);
+
+
 
         String[] name_first = new String[num_first];            //  1차 지역의 이름을 저장
         String[] code_first = new String[num_first];            //  1차 지역의 법정동 코드를 저장
@@ -78,19 +84,23 @@ public class set_filter extends AppCompatActivity {
             }
         });
 
+        final MsgRequest bundle = new MsgRequest();
+        final List<String> disaster_type = new ArrayList<>();
+        final List<String> disaster_level = new ArrayList<>();
         ImageButton b_apply = (ImageButton) findViewById(R.id.apply);
         b_apply.setOnClickListener(new Button.OnClickListener() {
             public void onClick(View v) {
                 // 필터 설정을 전부 파라미터로 넘기고 MainActivity로 이동(finish)
                 Intent return_filter_intent = new Intent(getApplicationContext(), MainActivity.class);
-                total_bundle.putString("CODE_REGION", code_region);
-                total_bundle.putString("DISEASE", disease);
-                total_bundle.putInt("INFO", info);
-                total_bundle.putInt("WARNING", warning);
-                total_bundle.putString("STARTDATE", startdate);
-                total_bundle.putString("ENDDATE", enddate);
-                return_filter_intent.putExtra("TOTAL_BUNDLE", total_bundle);
-                setResult(REQUEST_CODE_FILTER, return_filter_intent);
+                bundle.setLocation_code(code_region);
+                bundle.setStart_date("2020-01-01");
+                bundle.setEnd_date("2020-05-10");
+                bundle.setDisaster_group("기상특보");
+                //disaster_type =
+                bundle.setDisaster_type(disaster_type);
+                bundle.setDisaster_level(disaster_level);
+                return_filter_intent.putExtra("TOTAL_BUNDLE", bundle);
+                setResult(RESULT_OK, return_filter_intent);
                 finish();
             }
         });
@@ -146,19 +156,21 @@ public class set_filter extends AppCompatActivity {
         });
 
 
+
+
+
+
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         // Check which request we're responding to
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == REQUEST_CODE_FILTER) {
+        if (requestCode == REQUEST_CODE_REGION) {
             if (resultCode == RESULT_OK) {
-                total_bundle = data.getBundleExtra("BUNDLE");
+                total_bundle = data.getBundleExtra("REGION_BUNDLE");
                 code_region = total_bundle.getString("PARAMETER_CODE");
                 name_region = total_bundle.getString("PARAMETER_NAME");
-
-
             }
         }
     }
