@@ -104,7 +104,7 @@
                         android:visibility="visible">
 
                         <FrameLayout
-                            android:id="@+id/second_frame"
+                            android:id="@+id/frame_second"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content">
 
