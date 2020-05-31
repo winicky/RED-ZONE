@@ -2,6 +2,7 @@ package com.geovengers.redzone;
 
 import android.content.Intent;
 import android.graphics.Color;
+import android.graphics.ComposePathEffect;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -27,8 +28,6 @@ import java.util.StringTokenizer;
 }*/
 
 public class region_select extends AppCompatActivity {
-
-    public static final int REQUEST_CODE_REGION = 1003;
 
     //  1차지역 순서는 서울-부산-대구-인천-광주-대전-울산-세종-경기-강원-충북-충남-전북-전남-경북-경남-제주 순
 
@@ -124,12 +123,13 @@ public class region_select extends AppCompatActivity {
     int i = 0, j = 0;
     String parameter_name = new String();                   //  Intent로 넘길 선택지역 이름
     String parameter_code = new String();                   //  Intent로 넘길 선택지역 코드
-    int checkcount = 0;                                     //  2차지역 버튼 Listener에서 사용할 변수(현재 체크되어 있는 다른 2차지역 버튼이 있는가?)
+    int checkcount_second = 0;                              //  2차지역 버튼 Listener에서 사용할 변수(현재 체크되어 있는 다른 2차지역 버튼이 있는가?)
+    int checkcount_first = 0;                               //  1차지역 버튼 Listener에서 사용할 변수(현재 체크되어 있는 다른 1차지역 버튼이 있는가?)
     int index_first = 0;                                    //  1차지역 버튼 Listener에서 사용할 변수(최종선택의 1차지역이 어디인지 나타내는 변수)
 
-    Button[] button_first = new Button[num_first];          //  1차지역 버튼 변수
-    CompoundButton arg1;                                    //  2차지역이 동시에 2개 이상 선택되었는지 확인하기 위한 변수(onCheckedChange 리스너에 들어감)
-
+    ToggleButton[] button_first = new ToggleButton[num_first];          //  1차지역 버튼 변수
+    CompoundButton arg_second;                                          //  2차지역이 동시에 2개 이상 선택되었는지 확인하기 위한 변수(onCheckedChange 리스너에 들어감)
+    CompoundButton arg_first;                                           //  1차지역이 동시에 2개 이상 선택되었는지 확인하기 위한 변수(onCheckedChange 리스너에 들어감)
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -141,146 +141,151 @@ public class region_select extends AppCompatActivity {
             public void onClick(View v) {                                          //  리셋 버튼을 누르면
                 parameter_code = null;                                              //  번들에 넣을 코드값과
                 parameter_name = null;                                              //  이름값을 초기화 하고 
-                arg1.setChecked(false);                                             //  마지막으로 선택한 2차지역 버튼의
-                arg1 = null;                                                        //  체크 상태와 존재를 초기화하고
-                index_first = 0;                                                    //  1차지역 선택 현황도 초기화(얘는 토글버튼이 아님) -> 근데 얘도 토글버튼으로 만들어야 할듯
+                arg_second.setChecked(false);                                       //  마지막으로 선택한 2차지역 버튼과
+                arg_first.setChecked(false);                                        //  1차지역 버튼의
+                arg_second = null;                                                  //  체크 상태와
+                arg_first = null;                                                   //  존재를 초기화하고
+                index_first = 0;                                                    //  1차지역 선택 현황도 초기화
             }
         });
 
         ImageButton b_apply = (ImageButton) findViewById(R.id.apply);               //  필터 적용 버튼
         b_apply.setOnClickListener(new Button.OnClickListener() {                   //  적용 버튼을 누르면
-            public void onClick(View v) {                                           //  번들에 데이터(이름, 코드)를 담아 finish
-                switch (index_first) {                                              //  최종 선택의 1차지역 인덱스를 받아
-                    case 0:                                                         //  케이스별로 구분
-                        for (i = 0; i < NUM_SEOUL; i++) {                           //  해당 1차 지역 내에 있는 2차 지역의 이름들과 비교해서
-                            if (name_seoul[i].equals(arg1.getText().toString())) {  //  같으면
-                                parameter_code = code_seoul[i];                     //  번들에 넣을 코드 변수에 해당 2차지역 코드를 입력
-                            }                                                       //  이하 각 1차지역마다 코드 반복
-                        }
-                        break;
-                    case 1:
-                        for (i = 0; i < NUM_PUSAN; i++) {
-                            if (name_pusan[i].equals(arg1.getText().toString())) {
-                                parameter_code = code_pusan[i];
-                            }
-                        }
-                        break;
-                    case 2:
-                        for (i = 0; i < NUM_DAEGU; i++) {
-                            if (name_daegu[i].equals(arg1.getText().toString())) {
-                                parameter_code = code_daegu[i];
-                            }
-                        }
-                        break;
-                    case 3:
-                        for (i = 0; i < NUM_INCHEON; i++) {
-                            if (name_incheon[i].equals(arg1.getText().toString())) {
-                                parameter_code = code_incheon[i];
-                            }
-                        }
-                        break;
-                    case 4:
-                        for (i = 0; i < NUM_GWANGJU; i++) {
-                            if (name_gwangju[i].equals(arg1.getText().toString())) {
-                                parameter_code = code_gwangju[i];
-                            }
-                        }
-                        break;
-                    case 5:
-                        for (i = 0; i < NUM_DAEJEON; i++) {
-                            if (name_daejeon[i].equals(arg1.getText().toString())) {
-                                parameter_code = code_daejeon[i];
-                            }
-                        }
-                        break;
-                    case 6:
-                        for (i = 0; i < NUM_ULSAN; i++) {
-                            if (name_ulsan[i].equals(arg1.getText().toString())) {
-                                parameter_code = code_ulsan[i];
-                            }
-                        }
-                        break;
-                    case 7:
-                        for (i = 0; i < NUM_SEJONG; i++) {
-                            if (name_sejong[i].equals(arg1.getText().toString())) {
-                                parameter_code = code_sejong[i];
-                            }
-                        }
-                        break;
-                    case 8:
-                        for (i = 0; i < NUM_GYEONGGI; i++) {
-                            if (name_gyeonggi[i].equals(arg1.getText().toString())) {
-                                parameter_code = code_gyeonggi[i];
-                            }
-                        }
-                        break;
-                    case 9:
-                        for (i = 0; i < NUM_GANGWON; i++) {
-                            if (name_gangwon[i].equals(arg1.getText().toString())) {
-                                parameter_code = code_gangwon[i];
-                            }
-                        }
-                        break;
-                    case 10:
-                        for (i = 0; i < NUM_CHUNGBUK; i++) {
-                            if (name_chungbuk[i].equals(arg1.getText().toString())) {
-                                parameter_code = code_chungbuk[i];
-                            }
-                        }
-                        break;
-                    case 11:
-                        for (i = 0; i < NUM_CHUNGNAM; i++) {
-                            if (name_chungnam[i].equals(arg1.getText().toString())) {
-                                parameter_code = code_chungnam[i];
-                            }
-                        }
-                        break;
-                    case 12:
-                        for (i = 0; i < NUM_JEONBUK; i++) {
-                            if (name_jeonbuk[i].equals(arg1.getText().toString())) {
-                                parameter_code = code_jeonbuk[i];
-                            }
-                        }
-                        break;
-                    case 13:
-                        for (i = 0; i < NUM_JEONNAM; i++) {
-                            if (name_jeonnam[i].equals(arg1.getText().toString())) {
-                                parameter_code = code_jeonnam[i];
-                            }
-                        }
-                        break;
-                    case 14:
-                        for (i = 0; i < NUM_GYEONGBUK; i++) {
-                            if (name_gyeongbuk[i].equals(arg1.getText().toString())) {
-                                parameter_code = code_gyeongbuk[i];
-                            }
-                        }
-                        break;
-                    case 15:
-                        for (i = 0; i < NUM_GYEONGNAM; i++) {
-                            if (name_gyeongnam[i].equals(arg1.getText().toString())) {
-                                parameter_code = code_gyeongnam[i];
-                            }
-                        }
-                        break;
-                    case 16:
-                        for (i = 0; i < NUM_JEJU; i++) {
-                            if (name_jeju[i].equals(arg1.getText().toString())) {
-                                parameter_code = code_jeju[i];
-                            }
-                        }
-                        break;
+            public void onClick(View v) {                                          //  번들에 데이터(이름, 코드)를 담아 finish
+                if (arg_second == null){
+                    Toast.makeText(getApplicationContext(), "지역을 선택해주세요", Toast.LENGTH_LONG).show();
                 }
-                //  여기부터는 인텐트에 번들을 담아 다시 쏴야되는데 아직 못짬
-                
-
-                Intent return_region_intent = new Intent(getApplicationContext(), set_filter.class);
-                Bundle region_bundle = new Bundle();
-                region_bundle.putString("PARAMETER_CODE", parameter_code);
-                region_bundle.putString("PARAMETER_NAME", parameter_name);
-                return_region_intent.putExtra("REGION_BUNDLE", region_bundle);
-                setResult(RESULT_OK, return_region_intent);
-                finish();
+                else {
+                    switch (index_first) {                                              //  최종 선택의 1차지역 인덱스를 받아
+                        case 0:                                                         //  케이스별로 구분
+                            for (i = 0; i < NUM_SEOUL; i++) {                           //  해당 1차 지역 내에 있는 2차 지역의 이름들과 비교해서
+                                if (name_seoul[i].equals(arg_second.getText().toString())) {  //  같으면
+                                    parameter_code = code_seoul[i];                     //  번들에 넣을 코드 변수에 해당 2차지역 코드를 입력
+                                }                                                       //  이하 각 1차지역마다 코드 반복
+                            }
+                            break;
+                        case 1:
+                            for (i = 0; i < NUM_PUSAN; i++) {
+                                if (name_pusan[i].equals(arg_second.getText().toString())) {
+                                    parameter_code = code_pusan[i];
+                                }
+                            }
+                            break;
+                        case 2:
+                            for (i = 0; i < NUM_DAEGU; i++) {
+                                if (name_daegu[i].equals(arg_second.getText().toString())) {
+                                    parameter_code = code_daegu[i];
+                                }
+                            }
+                            break;
+                        case 3:
+                            for (i = 0; i < NUM_INCHEON; i++) {
+                                if (name_incheon[i].equals(arg_second.getText().toString())) {
+                                    parameter_code = code_incheon[i];
+                                }
+                            }
+                            break;
+                        case 4:
+                            for (i = 0; i < NUM_GWANGJU; i++) {
+                                if (name_gwangju[i].equals(arg_second.getText().toString())) {
+                                    parameter_code = code_gwangju[i];
+                                }
+                            }
+                            break;
+                        case 5:
+                            for (i = 0; i < NUM_DAEJEON; i++) {
+                                if (name_daejeon[i].equals(arg_second.getText().toString())) {
+                                    parameter_code = code_daejeon[i];
+                                }
+                            }
+                            break;
+                        case 6:
+                            for (i = 0; i < NUM_ULSAN; i++) {
+                                if (name_ulsan[i].equals(arg_second.getText().toString())) {
+                                    parameter_code = code_ulsan[i];
+                                }
+                            }
+                            break;
+                        case 7:
+                            for (i = 0; i < NUM_SEJONG; i++) {
+                                if (name_sejong[i].equals(arg_second.getText().toString())) {
+                                    parameter_code = code_sejong[i];
+                                }
+                            }
+                            break;
+                        case 8:
+                            for (i = 0; i < NUM_GYEONGGI; i++) {
+                                if (name_gyeonggi[i].equals(arg_second.getText().toString())) {
+                                    parameter_code = code_gyeonggi[i];
+                                }
+                            }
+                            break;
+                        case 9:
+                            for (i = 0; i < NUM_GANGWON; i++) {
+                                if (name_gangwon[i].equals(arg_second.getText().toString())) {
+                                    parameter_code = code_gangwon[i];
+                                }
+                            }
+                            break;
+                        case 10:
+                            for (i = 0; i < NUM_CHUNGBUK; i++) {
+                                if (name_chungbuk[i].equals(arg_second.getText().toString())) {
+                                    parameter_code = code_chungbuk[i];
+                                }
+                            }
+                            break;
+                        case 11:
+                            for (i = 0; i < NUM_CHUNGNAM; i++) {
+                                if (name_chungnam[i].equals(arg_second.getText().toString())) {
+                                    parameter_code = code_chungnam[i];
+                                }
+                            }
+                            break;
+                        case 12:
+                            for (i = 0; i < NUM_JEONBUK; i++) {
+                                if (name_jeonbuk[i].equals(arg_second.getText().toString())) {
+                                    parameter_code = code_jeonbuk[i];
+                                }
+                            }
+                            break;
+                        case 13:
+                            for (i = 0; i < NUM_JEONNAM; i++) {
+                                if (name_jeonnam[i].equals(arg_second.getText().toString())) {
+                                    parameter_code = code_jeonnam[i];
+                                }
+                            }
+                            break;
+                        case 14:
+                            for (i = 0; i < NUM_GYEONGBUK; i++) {
+                                if (name_gyeongbuk[i].equals(arg_second.getText().toString())) {
+                                    parameter_code = code_gyeongbuk[i];
+                                }
+                            }
+                            break;
+                        case 15:
+                            for (i = 0; i < NUM_GYEONGNAM; i++) {
+                                if (name_gyeongnam[i].equals(arg_second.getText().toString())) {
+                                    parameter_code = code_gyeongnam[i];
+                                }
+                            }
+                            break;
+                        case 16:
+                            for (i = 0; i < NUM_JEJU; i++) {
+                                if (name_jeju[i].equals(arg_second.getText().toString())) {
+                                    parameter_code = code_jeju[i];
+                                }
+                            }
+                            break;
+                    }
+                    //  여기부터는 인텐트에 번들을 담아 다시 쏜다
+                    Intent return_region_intent = new Intent();
+                    Bundle region_bundle = new Bundle();
+                    region_bundle.putString("PARAMETER_CODE", parameter_code);
+                    region_bundle.putString("PARAMETER_NAME", parameter_name);
+                    return_region_intent.putExtra("REGION_BUNDLE", region_bundle);
+                    setResult(RESULT_OK, return_region_intent);
+                    finish();
+                }
             }
         });
 
@@ -480,8 +485,8 @@ public class region_select extends AppCompatActivity {
         }
         //  2차지역 배열에 이름, 법정동코드 입력 종료
 
-        LinearLayout layout_first = (LinearLayout) findViewById(R.id.first_region_layout);  //  1차지역 버튼을 담을 레이아웃
-        FrameLayout frame_second = (FrameLayout) findViewById(R.id.frame_second);
+        LinearLayout layout_first = (LinearLayout) findViewById(R.id.layout_region_first);  //  1차지역 버튼을 담을 레이아웃
+        FrameLayout frame_second = (FrameLayout) findViewById(R.id.frame_region_second);
         //  2차지역은 "layout_1차지역 이름" 이라는 LinearLayout 안에 들어가있는데, 해당 layout들을 1개씩만 출력하기 위해
         //  FrameLayout 안에 각 layout을 추가했음.
         
@@ -500,15 +505,15 @@ public class region_select extends AppCompatActivity {
             button_seoul[i].setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener(){
                 public void onCheckedChanged(CompoundButton arg0, boolean ischecked){
                     if (!ischecked) {
-                        checkcount--;
+                        checkcount_second--;
                     }
                     else {
-                        if (checkcount != 0) {
-                            arg1.setChecked(false);
+                        if (checkcount_second != 0) {
+                            arg_second.setChecked(false);
                         }
-                        checkcount++;
-                        arg1 = arg0;
-                        parameter_name = arg1.getText().toString();
+                        checkcount_second++;
+                        arg_second = arg0;
+                        parameter_name = arg_second.getText().toString();
                     }
                 }
             });
@@ -529,15 +534,15 @@ public class region_select extends AppCompatActivity {
             button_pusan[i].setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                 public void onCheckedChanged(CompoundButton arg0, boolean ischecked) {
                     if (!ischecked) {
-                        checkcount--;
+                        checkcount_second--;
                     }
                     else {
-                        if (checkcount != 0) {
-                            arg1.setChecked(false);
+                        if (checkcount_second != 0) {
+                            arg_second.setChecked(false);
                         }
-                        checkcount++;
-                        arg1 = arg0;
-                        parameter_name = arg1.getText().toString();
+                        checkcount_second++;
+                        arg_second = arg0;
+                        parameter_name = arg_second.getText().toString();
                     }
                 }
             });
@@ -558,15 +563,15 @@ public class region_select extends AppCompatActivity {
             button_daegu[i].setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                 public void onCheckedChanged(CompoundButton arg0, boolean ischecked) {
                     if (!ischecked) {
-                        checkcount--;
+                        checkcount_second--;
                     }
                     else {
-                        if (checkcount != 0) {
-                            arg1.setChecked(false);
+                        if (checkcount_second != 0) {
+                            arg_second.setChecked(false);
                         }
-                        checkcount++;
-                        arg1 = arg0;
-                        parameter_name = arg1.getText().toString();
+                        checkcount_second++;
+                        arg_second = arg0;
+                        parameter_name = arg_second.getText().toString();
                     }
                 }
             });
@@ -587,14 +592,14 @@ public class region_select extends AppCompatActivity {
             button_incheon[i].setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                 public void onCheckedChanged(CompoundButton arg0, boolean ischecked) {
                     if (!ischecked) {
-                        checkcount--;
+                        checkcount_second--;
                     } else {
-                        if (checkcount != 0) {
-                            arg1.setChecked(false);
+                        if (checkcount_second != 0) {
+                            arg_second.setChecked(false);
                         }
-                        checkcount++;
-                        arg1 = arg0;
-                        parameter_name = arg1.getText().toString();
+                        checkcount_second++;
+                        arg_second = arg0;
+                        parameter_name = arg_second.getText().toString();
                     }
                 }
             });
@@ -615,14 +620,14 @@ public class region_select extends AppCompatActivity {
             button_gwangju[i].setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                 public void onCheckedChanged(CompoundButton arg0, boolean ischecked) {
                     if (!ischecked) {
-                        checkcount--;
+                        checkcount_second--;
                     } else {
-                        if (checkcount != 0) {
-                            arg1.setChecked(false);
+                        if (checkcount_second != 0) {
+                            arg_second.setChecked(false);
                         }
-                        checkcount++;
-                        arg1 = arg0;
-                        parameter_name = arg1.getText().toString();
+                        checkcount_second++;
+                        arg_second = arg0;
+                        parameter_name = arg_second.getText().toString();
                     }
                 }
             });
@@ -643,14 +648,14 @@ public class region_select extends AppCompatActivity {
             button_daejeon[i].setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                 public void onCheckedChanged(CompoundButton arg0, boolean ischecked) {
                     if (!ischecked) {
-                        checkcount--;
+                        checkcount_second--;
                     } else {
-                        if (checkcount != 0) {
-                            arg1.setChecked(false);
+                        if (checkcount_second != 0) {
+                            arg_second.setChecked(false);
                         }
-                        checkcount++;
-                        arg1 = arg0;
-                        parameter_name = arg1.getText().toString();
+                        checkcount_second++;
+                        arg_second = arg0;
+                        parameter_name = arg_second.getText().toString();
                     }
                 }
             });
@@ -671,14 +676,14 @@ public class region_select extends AppCompatActivity {
             button_ulsan[i].setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                 public void onCheckedChanged(CompoundButton arg0, boolean ischecked) {
                     if (!ischecked) {
-                        checkcount--;
+                        checkcount_second--;
                     } else {
-                        if (checkcount != 0) {
-                            arg1.setChecked(false);
+                        if (checkcount_second != 0) {
+                            arg_second.setChecked(false);
                         }
-                        checkcount++;
-                        arg1 = arg0;
-                        parameter_name = arg1.getText().toString();
+                        checkcount_second++;
+                        arg_second = arg0;
+                        parameter_name = arg_second.getText().toString();
                     }
                 }
             });
@@ -699,14 +704,14 @@ public class region_select extends AppCompatActivity {
             button_sejong[i].setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                 public void onCheckedChanged(CompoundButton arg0, boolean ischecked) {
                     if (!ischecked) {
-                        checkcount--;
+                        checkcount_second--;
                     } else {
-                        if (checkcount != 0) {
-                            arg1.setChecked(false);
+                        if (checkcount_second != 0) {
+                            arg_second.setChecked(false);
                         }
-                        checkcount++;
-                        arg1 = arg0;
-                        parameter_name = arg1.getText().toString();
+                        checkcount_second++;
+                        arg_second = arg0;
+                        parameter_name = arg_second.getText().toString();
                     }
                 }
             });
@@ -727,14 +732,14 @@ public class region_select extends AppCompatActivity {
             button_gyeonggi[i].setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                 public void onCheckedChanged(CompoundButton arg0, boolean ischecked) {
                     if (!ischecked) {
-                        checkcount--;
+                        checkcount_second--;
                     } else {
-                        if (checkcount != 0) {
-                            arg1.setChecked(false);
+                        if (checkcount_second != 0) {
+                            arg_second.setChecked(false);
                         }
-                        checkcount++;
-                        arg1 = arg0;
-                        parameter_name = arg1.getText().toString();
+                        checkcount_second++;
+                        arg_second = arg0;
+                        parameter_name = arg_second.getText().toString();
                     }
                 }
             });
@@ -755,14 +760,14 @@ public class region_select extends AppCompatActivity {
             button_gangwon[i].setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                 public void onCheckedChanged(CompoundButton arg0, boolean ischecked) {
                     if (!ischecked) {
-                        checkcount--;
+                        checkcount_second--;
                     } else {
-                        if (checkcount != 0) {
-                            arg1.setChecked(false);
+                        if (checkcount_second != 0) {
+                            arg_second.setChecked(false);
                         }
-                        checkcount++;
-                        arg1 = arg0;
-                        parameter_name = arg1.getText().toString();
+                        checkcount_second++;
+                        arg_second = arg0;
+                        parameter_name = arg_second.getText().toString();
                     }
                 }
             });
@@ -783,14 +788,14 @@ public class region_select extends AppCompatActivity {
             button_chungbuk[i].setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                 public void onCheckedChanged(CompoundButton arg0, boolean ischecked) {
                     if (!ischecked) {
-                        checkcount--;
+                        checkcount_second--;
                     } else {
-                        if (checkcount != 0) {
-                            arg1.setChecked(false);
+                        if (checkcount_second != 0) {
+                            arg_second.setChecked(false);
                         }
-                        checkcount++;
-                        arg1 = arg0;
-                        parameter_name = arg1.getText().toString();
+                        checkcount_second++;
+                        arg_second = arg0;
+                        parameter_name = arg_second.getText().toString();
                     }
                 }
             });
@@ -811,14 +816,14 @@ public class region_select extends AppCompatActivity {
             button_chungnam[i].setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                 public void onCheckedChanged(CompoundButton arg0, boolean ischecked) {
                     if (!ischecked) {
-                        checkcount--;
+                        checkcount_second--;
                     } else {
-                        if (checkcount != 0) {
-                            arg1.setChecked(false);
+                        if (checkcount_second != 0) {
+                            arg_second.setChecked(false);
                         }
-                        checkcount++;
-                        arg1 = arg0;
-                        parameter_name = arg1.getText().toString();
+                        checkcount_second++;
+                        arg_second = arg0;
+                        parameter_name = arg_second.getText().toString();
                     }
                 }
             });
@@ -839,14 +844,14 @@ public class region_select extends AppCompatActivity {
             button_jeonbuk[i].setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                 public void onCheckedChanged(CompoundButton arg0, boolean ischecked) {
                     if (!ischecked) {
-                        checkcount--;
+                        checkcount_second--;
                     } else {
-                        if (checkcount != 0) {
-                            arg1.setChecked(false);
+                        if (checkcount_second != 0) {
+                            arg_second.setChecked(false);
                         }
-                        checkcount++;
-                        arg1 = arg0;
-                        parameter_name = arg1.getText().toString();
+                        checkcount_second++;
+                        arg_second = arg0;
+                        parameter_name = arg_second.getText().toString();
                     }
                 }
             });
@@ -867,14 +872,14 @@ public class region_select extends AppCompatActivity {
             button_jeonnam[i].setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                 public void onCheckedChanged(CompoundButton arg0, boolean ischecked) {
                     if (!ischecked) {
-                        checkcount--;
+                        checkcount_second--;
                     } else {
-                        if (checkcount != 0) {
-                            arg1.setChecked(false);
+                        if (checkcount_second != 0) {
+                            arg_second.setChecked(false);
                         }
-                        checkcount++;
-                        arg1 = arg0;
-                        parameter_name = arg1.getText().toString();
+                        checkcount_second++;
+                        arg_second = arg0;
+                        parameter_name = arg_second.getText().toString();
                     }
                 }
             });
@@ -895,14 +900,14 @@ public class region_select extends AppCompatActivity {
             button_gyeongbuk[i].setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                 public void onCheckedChanged(CompoundButton arg0, boolean ischecked) {
                     if (!ischecked) {
-                        checkcount--;
+                        checkcount_second--;
                     } else {
-                        if (checkcount != 0) {
-                            arg1.setChecked(false);
+                        if (checkcount_second != 0) {
+                            arg_second.setChecked(false);
                         }
-                        checkcount++;
-                        arg1 = arg0;
-                        parameter_name = arg1.getText().toString();
+                        checkcount_second++;
+                        arg_second = arg0;
+                        parameter_name = arg_second.getText().toString();
                     }
                 }
             });
@@ -923,14 +928,14 @@ public class region_select extends AppCompatActivity {
             button_gyeongnam[i].setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                 public void onCheckedChanged(CompoundButton arg0, boolean ischecked) {
                     if (!ischecked) {
-                        checkcount--;
+                        checkcount_second--;
                     } else {
-                        if (checkcount != 0) {
-                            arg1.setChecked(false);
+                        if (checkcount_second != 0) {
+                            arg_second.setChecked(false);
                         }
-                        checkcount++;
-                        arg1 = arg0;
-                        parameter_name = arg1.getText().toString();
+                        checkcount_second++;
+                        arg_second = arg0;
+                        parameter_name = arg_second.getText().toString();
                     }
                 }
             });
@@ -953,14 +958,14 @@ public class region_select extends AppCompatActivity {
             button_jeju[i].setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                 public void onCheckedChanged(CompoundButton arg0, boolean ischecked) {
                     if (!ischecked) {
-                        checkcount--;
+                        checkcount_second--;
                     } else {
-                        if (checkcount != 0) {
-                            arg1.setChecked(false);
+                        if (checkcount_second != 0) {
+                            arg_second.setChecked(false);
                         }
-                        checkcount++;
-                        arg1 = arg0;
-                        parameter_name = arg1.getText().toString();
+                        checkcount_second++;
+                        arg_second = arg0;
+                        parameter_name = arg_second.getText().toString();
                     }
                 }
             });
@@ -971,400 +976,557 @@ public class region_select extends AppCompatActivity {
 
         //  1차지역 버튼들을 화면 좌측(1차지역 레이아웃)에 삽입
         for (i = 0; i < num_first; i++) {
-            button_first[i] = new Button(this);
-            button_first[i].setText(name_first[i]);
+            button_first[i] = new ToggleButton(this);
+            button_first[i].setTextOn(name_first[i]);
+            button_first[i].setTextOff(name_first[i]);
+            button_first[i].setChecked(false);
             layout_first.addView(button_first[i]);
         }
 
         // 1차지역 버튼 리스너 목록 : 해당 지역을 제외한 나머지의 Visibility를 GONE으로, 해당 지역만 VISIBLE로 설정
-        button_first[0].setOnClickListener(new Button.OnClickListener() {
-            public void onClick(View v) {
-                layout_seoul.setVisibility(View.VISIBLE);
-                layout_pusan.setVisibility(View.GONE);
-                layout_daegu.setVisibility(View.GONE);
-                layout_incheon.setVisibility(View.GONE);
-                layout_gwangju.setVisibility(View.GONE);
-                layout_daejeon.setVisibility(View.GONE);
-                layout_ulsan.setVisibility(View.GONE);
-                layout_sejong.setVisibility(View.GONE);
-                layout_gyeonggi.setVisibility(View.GONE);
-                layout_gangwon.setVisibility(View.GONE);
-                layout_chungbuk.setVisibility(View.GONE);
-                layout_chungnam.setVisibility(View.GONE);
-                layout_jeonbuk.setVisibility(View.GONE);
-                layout_jeonnam.setVisibility(View.GONE);
-                layout_gyeongbuk.setVisibility(View.GONE);
-                layout_gyeongnam.setVisibility(View.GONE);
-                layout_jeju.setVisibility(View.GONE);
-                index_first = 0;
+        button_first[0].setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            public void onCheckedChanged(CompoundButton arg0, boolean ischecked) {
+                if (!ischecked){
+                    checkcount_first--;
+                }
+                else {
+                    if (checkcount_first != 0) {
+                        arg_first.setChecked(false);
+                    }
+                    checkcount_first++;
+                    arg_first = arg0;
+                    layout_seoul.setVisibility(View.VISIBLE);
+                    layout_pusan.setVisibility(View.GONE);
+                    layout_daegu.setVisibility(View.GONE);
+                    layout_incheon.setVisibility(View.GONE);
+                    layout_gwangju.setVisibility(View.GONE);
+                    layout_daejeon.setVisibility(View.GONE);
+                    layout_ulsan.setVisibility(View.GONE);
+                    layout_sejong.setVisibility(View.GONE);
+                    layout_gyeonggi.setVisibility(View.GONE);
+                    layout_gangwon.setVisibility(View.GONE);
+                    layout_chungbuk.setVisibility(View.GONE);
+                    layout_chungnam.setVisibility(View.GONE);
+                    layout_jeonbuk.setVisibility(View.GONE);
+                    layout_jeonnam.setVisibility(View.GONE);
+                    layout_gyeongbuk.setVisibility(View.GONE);
+                    layout_gyeongnam.setVisibility(View.GONE);
+                    layout_jeju.setVisibility(View.GONE);
+                    index_first = 0;
+                }
             }
         });
 
-        button_first[1].setOnClickListener(new Button.OnClickListener() {
-            public void onClick(View v) {
-                layout_seoul.setVisibility(View.GONE);
-                layout_pusan.setVisibility(View.VISIBLE);
-                layout_daegu.setVisibility(View.GONE);
-                layout_incheon.setVisibility(View.GONE);
-                layout_gwangju.setVisibility(View.GONE);
-                layout_daejeon.setVisibility(View.GONE);
-                layout_ulsan.setVisibility(View.GONE);
-                layout_sejong.setVisibility(View.GONE);
-                layout_gyeonggi.setVisibility(View.GONE);
-                layout_gangwon.setVisibility(View.GONE);
-                layout_chungbuk.setVisibility(View.GONE);
-                layout_chungnam.setVisibility(View.GONE);
-                layout_jeonbuk.setVisibility(View.GONE);
-                layout_jeonnam.setVisibility(View.GONE);
-                layout_gyeongbuk.setVisibility(View.GONE);
-                layout_gyeongnam.setVisibility(View.GONE);
-                layout_jeju.setVisibility(View.GONE);
-                index_first = 1;
+        button_first[1].setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            public void onCheckedChanged(CompoundButton arg0, boolean ischecked) {
+                if (!ischecked){
+                    checkcount_first--;
+                }
+                else {
+                    if (checkcount_first != 0) {
+                        arg_first.setChecked(false);
+                    }
+                    checkcount_first++;
+                    arg_first = arg0;
+                    layout_seoul.setVisibility(View.GONE);
+                    layout_pusan.setVisibility(View.VISIBLE);
+                    layout_daegu.setVisibility(View.GONE);
+                    layout_incheon.setVisibility(View.GONE);
+                    layout_gwangju.setVisibility(View.GONE);
+                    layout_daejeon.setVisibility(View.GONE);
+                    layout_ulsan.setVisibility(View.GONE);
+                    layout_sejong.setVisibility(View.GONE);
+                    layout_gyeonggi.setVisibility(View.GONE);
+                    layout_gangwon.setVisibility(View.GONE);
+                    layout_chungbuk.setVisibility(View.GONE);
+                    layout_chungnam.setVisibility(View.GONE);
+                    layout_jeonbuk.setVisibility(View.GONE);
+                    layout_jeonnam.setVisibility(View.GONE);
+                    layout_gyeongbuk.setVisibility(View.GONE);
+                    layout_gyeongnam.setVisibility(View.GONE);
+                    layout_jeju.setVisibility(View.GONE);
+                    index_first = 1;
+                }
             }
         });
 
-        button_first[2].setOnClickListener(new Button.OnClickListener() {
-            public void onClick(View v) {
-                layout_seoul.setVisibility(View.GONE);
-                layout_pusan.setVisibility(View.GONE);
-                layout_daegu.setVisibility(View.VISIBLE);
-                layout_incheon.setVisibility(View.GONE);
-                layout_gwangju.setVisibility(View.GONE);
-                layout_daejeon.setVisibility(View.GONE);
-                layout_ulsan.setVisibility(View.GONE);
-                layout_sejong.setVisibility(View.GONE);
-                layout_gyeonggi.setVisibility(View.GONE);
-                layout_gangwon.setVisibility(View.GONE);
-                layout_chungbuk.setVisibility(View.GONE);
-                layout_chungnam.setVisibility(View.GONE);
-                layout_jeonbuk.setVisibility(View.GONE);
-                layout_jeonnam.setVisibility(View.GONE);
-                layout_gyeongbuk.setVisibility(View.GONE);
-                layout_gyeongnam.setVisibility(View.GONE);
-                layout_jeju.setVisibility(View.GONE);
-                index_first = 2;
+        button_first[2].setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            public void onCheckedChanged(CompoundButton arg0, boolean ischecked) {
+                if (!ischecked) {
+                    checkcount_first--;
+                } else {
+                    if (checkcount_first != 0) {
+                        arg_first.setChecked(false);
+                    }
+                    checkcount_first++;
+                    arg_first = arg0;
+                    layout_seoul.setVisibility(View.GONE);
+                    layout_pusan.setVisibility(View.GONE);
+                    layout_daegu.setVisibility(View.VISIBLE);
+                    layout_incheon.setVisibility(View.GONE);
+                    layout_gwangju.setVisibility(View.GONE);
+                    layout_daejeon.setVisibility(View.GONE);
+                    layout_ulsan.setVisibility(View.GONE);
+                    layout_sejong.setVisibility(View.GONE);
+                    layout_gyeonggi.setVisibility(View.GONE);
+                    layout_gangwon.setVisibility(View.GONE);
+                    layout_chungbuk.setVisibility(View.GONE);
+                    layout_chungnam.setVisibility(View.GONE);
+                    layout_jeonbuk.setVisibility(View.GONE);
+                    layout_jeonnam.setVisibility(View.GONE);
+                    layout_gyeongbuk.setVisibility(View.GONE);
+                    layout_gyeongnam.setVisibility(View.GONE);
+                    layout_jeju.setVisibility(View.GONE);
+                    index_first = 2;
+                }
             }
         });
 
-        button_first[3].setOnClickListener(new Button.OnClickListener() {
-            public void onClick(View v) {
-                layout_seoul.setVisibility(View.GONE);
-                layout_pusan.setVisibility(View.GONE);
-                layout_daegu.setVisibility(View.GONE);
-                layout_incheon.setVisibility(View.VISIBLE);
-                layout_gwangju.setVisibility(View.GONE);
-                layout_daejeon.setVisibility(View.GONE);
-                layout_ulsan.setVisibility(View.GONE);
-                layout_sejong.setVisibility(View.GONE);
-                layout_gyeonggi.setVisibility(View.GONE);
-                layout_gangwon.setVisibility(View.GONE);
-                layout_chungbuk.setVisibility(View.GONE);
-                layout_chungnam.setVisibility(View.GONE);
-                layout_jeonbuk.setVisibility(View.GONE);
-                layout_jeonnam.setVisibility(View.GONE);
-                layout_gyeongbuk.setVisibility(View.GONE);
-                layout_gyeongnam.setVisibility(View.GONE);
-                layout_jeju.setVisibility(View.GONE);
-                index_first = 3;
+        button_first[3].setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            public void onCheckedChanged(CompoundButton arg0, boolean ischecked) {
+                if (!ischecked) {
+                    checkcount_first--;
+                } else {
+                    if (checkcount_first != 0) {
+                        arg_first.setChecked(false);
+                    }
+                    checkcount_first++;
+                    arg_first = arg0;
+                    layout_seoul.setVisibility(View.GONE);
+                    layout_pusan.setVisibility(View.GONE);
+                    layout_daegu.setVisibility(View.GONE);
+                    layout_incheon.setVisibility(View.VISIBLE);
+                    layout_gwangju.setVisibility(View.GONE);
+                    layout_daejeon.setVisibility(View.GONE);
+                    layout_ulsan.setVisibility(View.GONE);
+                    layout_sejong.setVisibility(View.GONE);
+                    layout_gyeonggi.setVisibility(View.GONE);
+                    layout_gangwon.setVisibility(View.GONE);
+                    layout_chungbuk.setVisibility(View.GONE);
+                    layout_chungnam.setVisibility(View.GONE);
+                    layout_jeonbuk.setVisibility(View.GONE);
+                    layout_jeonnam.setVisibility(View.GONE);
+                    layout_gyeongbuk.setVisibility(View.GONE);
+                    layout_gyeongnam.setVisibility(View.GONE);
+                    layout_jeju.setVisibility(View.GONE);
+                    index_first = 3;
+                }
             }
         });
 
-        button_first[4].setOnClickListener(new Button.OnClickListener() {
-            public void onClick(View v) {
-                layout_seoul.setVisibility(View.GONE);
-                layout_pusan.setVisibility(View.GONE);
-                layout_daegu.setVisibility(View.GONE);
-                layout_incheon.setVisibility(View.GONE);
-                layout_gwangju.setVisibility(View.VISIBLE);
-                layout_daejeon.setVisibility(View.GONE);
-                layout_ulsan.setVisibility(View.GONE);
-                layout_sejong.setVisibility(View.GONE);
-                layout_gyeonggi.setVisibility(View.GONE);
-                layout_gangwon.setVisibility(View.GONE);
-                layout_chungbuk.setVisibility(View.GONE);
-                layout_chungnam.setVisibility(View.GONE);
-                layout_jeonbuk.setVisibility(View.GONE);
-                layout_jeonnam.setVisibility(View.GONE);
-                layout_gyeongbuk.setVisibility(View.GONE);
-                layout_gyeongnam.setVisibility(View.GONE);
-                layout_jeju.setVisibility(View.GONE);
-                index_first = 4;
+        button_first[4].setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            public void onCheckedChanged(CompoundButton arg0, boolean ischecked) {
+                if (!ischecked) {
+                    checkcount_first--;
+                } else {
+                    if (checkcount_first != 0) {
+                        arg_first.setChecked(false);
+                    }
+                    checkcount_first++;
+                    arg_first = arg0;
+                    layout_seoul.setVisibility(View.GONE);
+                    layout_pusan.setVisibility(View.GONE);
+                    layout_daegu.setVisibility(View.GONE);
+                    layout_incheon.setVisibility(View.GONE);
+                    layout_gwangju.setVisibility(View.VISIBLE);
+                    layout_daejeon.setVisibility(View.GONE);
+                    layout_ulsan.setVisibility(View.GONE);
+                    layout_sejong.setVisibility(View.GONE);
+                    layout_gyeonggi.setVisibility(View.GONE);
+                    layout_gangwon.setVisibility(View.GONE);
+                    layout_chungbuk.setVisibility(View.GONE);
+                    layout_chungnam.setVisibility(View.GONE);
+                    layout_jeonbuk.setVisibility(View.GONE);
+                    layout_jeonnam.setVisibility(View.GONE);
+                    layout_gyeongbuk.setVisibility(View.GONE);
+                    layout_gyeongnam.setVisibility(View.GONE);
+                    layout_jeju.setVisibility(View.GONE);
+                    index_first = 4;
+                }
             }
         });
 
-        button_first[5].setOnClickListener(new Button.OnClickListener() {
-            public void onClick(View v) {
-                layout_seoul.setVisibility(View.GONE);
-                layout_pusan.setVisibility(View.GONE);
-                layout_daegu.setVisibility(View.GONE);
-                layout_incheon.setVisibility(View.GONE);
-                layout_gwangju.setVisibility(View.GONE);
-                layout_daejeon.setVisibility(View.VISIBLE);
-                layout_ulsan.setVisibility(View.GONE);
-                layout_sejong.setVisibility(View.GONE);
-                layout_gyeonggi.setVisibility(View.GONE);
-                layout_gangwon.setVisibility(View.GONE);
-                layout_chungbuk.setVisibility(View.GONE);
-                layout_chungnam.setVisibility(View.GONE);
-                layout_jeonbuk.setVisibility(View.GONE);
-                layout_jeonnam.setVisibility(View.GONE);
-                layout_gyeongbuk.setVisibility(View.GONE);
-                layout_gyeongnam.setVisibility(View.GONE);
-                layout_jeju.setVisibility(View.GONE);
-                index_first = 5;
+        button_first[5].setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            public void onCheckedChanged(CompoundButton arg0, boolean ischecked) {
+                if (!ischecked) {
+                    checkcount_first--;
+                } else {
+                    if (checkcount_first != 0) {
+                        arg_first.setChecked(false);
+                    }
+                    checkcount_first++;
+                    arg_first = arg0;
+                    layout_seoul.setVisibility(View.GONE);
+                    layout_pusan.setVisibility(View.GONE);
+                    layout_daegu.setVisibility(View.GONE);
+                    layout_incheon.setVisibility(View.GONE);
+                    layout_gwangju.setVisibility(View.GONE);
+                    layout_daejeon.setVisibility(View.VISIBLE);
+                    layout_ulsan.setVisibility(View.GONE);
+                    layout_sejong.setVisibility(View.GONE);
+                    layout_gyeonggi.setVisibility(View.GONE);
+                    layout_gangwon.setVisibility(View.GONE);
+                    layout_chungbuk.setVisibility(View.GONE);
+                    layout_chungnam.setVisibility(View.GONE);
+                    layout_jeonbuk.setVisibility(View.GONE);
+                    layout_jeonnam.setVisibility(View.GONE);
+                    layout_gyeongbuk.setVisibility(View.GONE);
+                    layout_gyeongnam.setVisibility(View.GONE);
+                    layout_jeju.setVisibility(View.GONE);
+                    index_first = 5;
+                }
             }
         });
 
-        button_first[6].setOnClickListener(new Button.OnClickListener() {
-            public void onClick(View v) {
-                layout_seoul.setVisibility(View.GONE);
-                layout_pusan.setVisibility(View.GONE);
-                layout_daegu.setVisibility(View.GONE);
-                layout_incheon.setVisibility(View.GONE);
-                layout_gwangju.setVisibility(View.GONE);
-                layout_daejeon.setVisibility(View.GONE);
-                layout_ulsan.setVisibility(View.VISIBLE);
-                layout_sejong.setVisibility(View.GONE);
-                layout_gyeonggi.setVisibility(View.GONE);
-                layout_gangwon.setVisibility(View.GONE);
-                layout_chungbuk.setVisibility(View.GONE);
-                layout_chungnam.setVisibility(View.GONE);
-                layout_jeonbuk.setVisibility(View.GONE);
-                layout_jeonnam.setVisibility(View.GONE);
-                layout_gyeongbuk.setVisibility(View.GONE);
-                layout_gyeongnam.setVisibility(View.GONE);
-                layout_jeju.setVisibility(View.GONE);
-                index_first = 6;
+        button_first[6].setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            public void onCheckedChanged(CompoundButton arg0, boolean ischecked) {
+                if (!ischecked) {
+                    checkcount_first--;
+                } else {
+                    if (checkcount_first != 0) {
+                        arg_first.setChecked(false);
+                    }
+                    checkcount_first++;
+                    arg_first = arg0;
+                    layout_seoul.setVisibility(View.GONE);
+                    layout_pusan.setVisibility(View.GONE);
+                    layout_daegu.setVisibility(View.GONE);
+                    layout_incheon.setVisibility(View.GONE);
+                    layout_gwangju.setVisibility(View.GONE);
+                    layout_daejeon.setVisibility(View.GONE);
+                    layout_ulsan.setVisibility(View.VISIBLE);
+                    layout_sejong.setVisibility(View.GONE);
+                    layout_gyeonggi.setVisibility(View.GONE);
+                    layout_gangwon.setVisibility(View.GONE);
+                    layout_chungbuk.setVisibility(View.GONE);
+                    layout_chungnam.setVisibility(View.GONE);
+                    layout_jeonbuk.setVisibility(View.GONE);
+                    layout_jeonnam.setVisibility(View.GONE);
+                    layout_gyeongbuk.setVisibility(View.GONE);
+                    layout_gyeongnam.setVisibility(View.GONE);
+                    layout_jeju.setVisibility(View.GONE);
+                    index_first = 6;
+                }
             }
         });
 
-        button_first[7].setOnClickListener(new Button.OnClickListener() {
-            public void onClick(View v) {
-                layout_seoul.setVisibility(View.GONE);
-                layout_pusan.setVisibility(View.GONE);
-                layout_daegu.setVisibility(View.GONE);
-                layout_incheon.setVisibility(View.GONE);
-                layout_gwangju.setVisibility(View.GONE);
-                layout_daejeon.setVisibility(View.GONE);
-                layout_ulsan.setVisibility(View.GONE);
-                layout_sejong.setVisibility(View.VISIBLE);
-                layout_gyeonggi.setVisibility(View.GONE);
-                layout_gangwon.setVisibility(View.GONE);
-                layout_chungbuk.setVisibility(View.GONE);
-                layout_chungnam.setVisibility(View.GONE);
-                layout_jeonbuk.setVisibility(View.GONE);
-                layout_jeonnam.setVisibility(View.GONE);
-                layout_gyeongbuk.setVisibility(View.GONE);
-                layout_gyeongnam.setVisibility(View.GONE);
-                layout_jeju.setVisibility(View.GONE);
-                index_first = 7;
+        button_first[7].setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            public void onCheckedChanged(CompoundButton arg0, boolean ischecked) {
+                if (!ischecked) {
+                    checkcount_first--;
+                } else {
+                    if (checkcount_first != 0) {
+                        arg_first.setChecked(false);
+                    }
+                    checkcount_first++;
+                    arg_first = arg0;
+                    layout_seoul.setVisibility(View.GONE);
+                    layout_pusan.setVisibility(View.GONE);
+                    layout_daegu.setVisibility(View.GONE);
+                    layout_incheon.setVisibility(View.GONE);
+                    layout_gwangju.setVisibility(View.GONE);
+                    layout_daejeon.setVisibility(View.GONE);
+                    layout_ulsan.setVisibility(View.GONE);
+                    layout_sejong.setVisibility(View.VISIBLE);
+                    layout_gyeonggi.setVisibility(View.GONE);
+                    layout_gangwon.setVisibility(View.GONE);
+                    layout_chungbuk.setVisibility(View.GONE);
+                    layout_chungnam.setVisibility(View.GONE);
+                    layout_jeonbuk.setVisibility(View.GONE);
+                    layout_jeonnam.setVisibility(View.GONE);
+                    layout_gyeongbuk.setVisibility(View.GONE);
+                    layout_gyeongnam.setVisibility(View.GONE);
+                    layout_jeju.setVisibility(View.GONE);
+                    index_first = 7;
+                }
             }
         });
 
-        button_first[8].setOnClickListener(new Button.OnClickListener() {
-            public void onClick(View v) {
-                layout_seoul.setVisibility(View.GONE);
-                layout_pusan.setVisibility(View.GONE);
-                layout_daegu.setVisibility(View.GONE);
-                layout_incheon.setVisibility(View.GONE);
-                layout_gwangju.setVisibility(View.GONE);
-                layout_daejeon.setVisibility(View.GONE);
-                layout_ulsan.setVisibility(View.GONE);
-                layout_sejong.setVisibility(View.GONE);
-                layout_gyeonggi.setVisibility(View.VISIBLE);
-                layout_gangwon.setVisibility(View.GONE);
-                layout_chungbuk.setVisibility(View.GONE);
-                layout_chungnam.setVisibility(View.GONE);
-                layout_jeonbuk.setVisibility(View.GONE);
-                layout_jeonnam.setVisibility(View.GONE);
-                layout_gyeongbuk.setVisibility(View.GONE);
-                layout_gyeongnam.setVisibility(View.GONE);
-                layout_jeju.setVisibility(View.GONE);
-                index_first = 8;
+        button_first[8].setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            public void onCheckedChanged(CompoundButton arg0, boolean ischecked) {
+                if (!ischecked) {
+                    checkcount_first--;
+                } else {
+                    if (checkcount_first != 0) {
+                        arg_first.setChecked(false);
+                    }
+                    checkcount_first++;
+                    arg_first = arg0;
+                    layout_seoul.setVisibility(View.GONE);
+                    layout_pusan.setVisibility(View.GONE);
+                    layout_daegu.setVisibility(View.GONE);
+                    layout_incheon.setVisibility(View.GONE);
+                    layout_gwangju.setVisibility(View.GONE);
+                    layout_daejeon.setVisibility(View.GONE);
+                    layout_ulsan.setVisibility(View.GONE);
+                    layout_sejong.setVisibility(View.GONE);
+                    layout_gyeonggi.setVisibility(View.VISIBLE);
+                    layout_gangwon.setVisibility(View.GONE);
+                    layout_chungbuk.setVisibility(View.GONE);
+                    layout_chungnam.setVisibility(View.GONE);
+                    layout_jeonbuk.setVisibility(View.GONE);
+                    layout_jeonnam.setVisibility(View.GONE);
+                    layout_gyeongbuk.setVisibility(View.GONE);
+                    layout_gyeongnam.setVisibility(View.GONE);
+                    layout_jeju.setVisibility(View.GONE);
+                    index_first = 8;
+                }
             }
         });
 
-        button_first[9].setOnClickListener(new Button.OnClickListener() {
-            public void onClick(View v) {
-                layout_seoul.setVisibility(View.GONE);
-                layout_pusan.setVisibility(View.GONE);
-                layout_daegu.setVisibility(View.GONE);
-                layout_incheon.setVisibility(View.GONE);
-                layout_gwangju.setVisibility(View.GONE);
-                layout_daejeon.setVisibility(View.GONE);
-                layout_ulsan.setVisibility(View.GONE);
-                layout_sejong.setVisibility(View.GONE);
-                layout_gyeonggi.setVisibility(View.GONE);
-                layout_gangwon.setVisibility(View.VISIBLE);
-                layout_chungbuk.setVisibility(View.GONE);
-                layout_chungnam.setVisibility(View.GONE);
-                layout_jeonbuk.setVisibility(View.GONE);
-                layout_jeonnam.setVisibility(View.GONE);
-                layout_gyeongbuk.setVisibility(View.GONE);
-                layout_gyeongnam.setVisibility(View.GONE);
-                layout_jeju.setVisibility(View.GONE);
-                index_first = 9;
+        button_first[9].setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            public void onCheckedChanged(CompoundButton arg0, boolean ischecked) {
+                if (!ischecked) {
+                    checkcount_first--;
+                } else {
+                    if (checkcount_first != 0) {
+                        arg_first.setChecked(false);
+                    }
+                    checkcount_first++;
+                    arg_first = arg0;
+                    layout_seoul.setVisibility(View.GONE);
+                    layout_pusan.setVisibility(View.GONE);
+                    layout_daegu.setVisibility(View.GONE);
+                    layout_incheon.setVisibility(View.GONE);
+                    layout_gwangju.setVisibility(View.GONE);
+                    layout_daejeon.setVisibility(View.GONE);
+                    layout_ulsan.setVisibility(View.GONE);
+                    layout_sejong.setVisibility(View.GONE);
+                    layout_gyeonggi.setVisibility(View.GONE);
+                    layout_gangwon.setVisibility(View.VISIBLE);
+                    layout_chungbuk.setVisibility(View.GONE);
+                    layout_chungnam.setVisibility(View.GONE);
+                    layout_jeonbuk.setVisibility(View.GONE);
+                    layout_jeonnam.setVisibility(View.GONE);
+                    layout_gyeongbuk.setVisibility(View.GONE);
+                    layout_gyeongnam.setVisibility(View.GONE);
+                    layout_jeju.setVisibility(View.GONE);
+                    index_first = 9;
+                }
             }
         });
 
-        button_first[10].setOnClickListener(new Button.OnClickListener() {
-            public void onClick(View v) {
-                layout_seoul.setVisibility(View.GONE);
-                layout_pusan.setVisibility(View.GONE);
-                layout_daegu.setVisibility(View.GONE);
-                layout_incheon.setVisibility(View.GONE);
-                layout_gwangju.setVisibility(View.GONE);
-                layout_daejeon.setVisibility(View.GONE);
-                layout_ulsan.setVisibility(View.GONE);
-                layout_sejong.setVisibility(View.GONE);
-                layout_gyeonggi.setVisibility(View.GONE);
-                layout_gangwon.setVisibility(View.GONE);
-                layout_chungbuk.setVisibility(View.VISIBLE);
-                layout_chungnam.setVisibility(View.GONE);
-                layout_jeonbuk.setVisibility(View.GONE);
-                layout_jeonnam.setVisibility(View.GONE);
-                layout_gyeongbuk.setVisibility(View.GONE);
-                layout_gyeongnam.setVisibility(View.GONE);
-                layout_jeju.setVisibility(View.GONE);
-                index_first = 10;
+        button_first[10].setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            public void onCheckedChanged(CompoundButton arg0, boolean ischecked) {
+                if (!ischecked) {
+                    checkcount_first--;
+                } else {
+                    if (checkcount_first != 0) {
+                        arg_first.setChecked(false);
+                    }
+                    checkcount_first++;
+                    arg_first = arg0;
+                    layout_seoul.setVisibility(View.GONE);
+                    layout_pusan.setVisibility(View.GONE);
+                    layout_daegu.setVisibility(View.GONE);
+                    layout_incheon.setVisibility(View.GONE);
+                    layout_gwangju.setVisibility(View.GONE);
+                    layout_daejeon.setVisibility(View.GONE);
+                    layout_ulsan.setVisibility(View.GONE);
+                    layout_sejong.setVisibility(View.GONE);
+                    layout_gyeonggi.setVisibility(View.GONE);
+                    layout_gangwon.setVisibility(View.GONE);
+                    layout_chungbuk.setVisibility(View.VISIBLE);
+                    layout_chungnam.setVisibility(View.GONE);
+                    layout_jeonbuk.setVisibility(View.GONE);
+                    layout_jeonnam.setVisibility(View.GONE);
+                    layout_gyeongbuk.setVisibility(View.GONE);
+                    layout_gyeongnam.setVisibility(View.GONE);
+                    layout_jeju.setVisibility(View.GONE);
+                    index_first = 10;
+                }
             }
         });
 
-        button_first[11].setOnClickListener(new Button.OnClickListener() {
-            public void onClick(View v) {
-                layout_seoul.setVisibility(View.GONE);
-                layout_pusan.setVisibility(View.GONE);
-                layout_daegu.setVisibility(View.GONE);
-                layout_incheon.setVisibility(View.GONE);
-                layout_gwangju.setVisibility(View.GONE);
-                layout_daejeon.setVisibility(View.GONE);
-                layout_ulsan.setVisibility(View.GONE);
-                layout_sejong.setVisibility(View.GONE);
-                layout_gyeonggi.setVisibility(View.GONE);
-                layout_gangwon.setVisibility(View.GONE);
-                layout_chungbuk.setVisibility(View.GONE);
-                layout_chungnam.setVisibility(View.VISIBLE);
-                layout_jeonbuk.setVisibility(View.GONE);
-                layout_jeonnam.setVisibility(View.GONE);
-                layout_gyeongbuk.setVisibility(View.GONE);
-                layout_gyeongnam.setVisibility(View.GONE);
-                layout_jeju.setVisibility(View.GONE);
-                index_first = 11;
+        button_first[11].setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            public void onCheckedChanged(CompoundButton arg0, boolean ischecked) {
+                if (!ischecked) {
+                    checkcount_first--;
+                } else {
+                    if (checkcount_first != 0) {
+                        arg_first.setChecked(false);
+                    }
+                    checkcount_first++;
+                    arg_first = arg0;
+                    layout_seoul.setVisibility(View.GONE);
+                    layout_pusan.setVisibility(View.GONE);
+                    layout_daegu.setVisibility(View.GONE);
+                    layout_incheon.setVisibility(View.GONE);
+                    layout_gwangju.setVisibility(View.GONE);
+                    layout_daejeon.setVisibility(View.GONE);
+                    layout_ulsan.setVisibility(View.GONE);
+                    layout_sejong.setVisibility(View.GONE);
+                    layout_gyeonggi.setVisibility(View.GONE);
+                    layout_gangwon.setVisibility(View.GONE);
+                    layout_chungbuk.setVisibility(View.GONE);
+                    layout_chungnam.setVisibility(View.VISIBLE);
+                    layout_jeonbuk.setVisibility(View.GONE);
+                    layout_jeonnam.setVisibility(View.GONE);
+                    layout_gyeongbuk.setVisibility(View.GONE);
+                    layout_gyeongnam.setVisibility(View.GONE);
+                    layout_jeju.setVisibility(View.GONE);
+                    index_first = 11;
+                }
             }
         });
 
-        button_first[12].setOnClickListener(new Button.OnClickListener() {
-            public void onClick(View v) {
-                layout_seoul.setVisibility(View.GONE);
-                layout_pusan.setVisibility(View.GONE);
-                layout_daegu.setVisibility(View.GONE);
-                layout_incheon.setVisibility(View.GONE);
-                layout_gwangju.setVisibility(View.GONE);
-                layout_daejeon.setVisibility(View.GONE);
-                layout_ulsan.setVisibility(View.GONE);
-                layout_sejong.setVisibility(View.GONE);
-                layout_gyeonggi.setVisibility(View.GONE);
-                layout_gangwon.setVisibility(View.GONE);
-                layout_chungbuk.setVisibility(View.GONE);
-                layout_chungnam.setVisibility(View.GONE);
-                layout_jeonbuk.setVisibility(View.VISIBLE);
-                layout_jeonnam.setVisibility(View.GONE);
-                layout_gyeongbuk.setVisibility(View.GONE);
-                layout_gyeongnam.setVisibility(View.GONE);
-                layout_jeju.setVisibility(View.GONE);
-                index_first = 12;
+        button_first[12].setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            public void onCheckedChanged(CompoundButton arg0, boolean ischecked) {
+                if (!ischecked) {
+                    checkcount_first--;
+                } else {
+                    if (checkcount_first != 0) {
+                        arg_first.setChecked(false);
+                    }
+                    checkcount_first++;
+                    arg_first = arg0;
+                    layout_seoul.setVisibility(View.GONE);
+                    layout_pusan.setVisibility(View.GONE);
+                    layout_daegu.setVisibility(View.GONE);
+                    layout_incheon.setVisibility(View.GONE);
+                    layout_gwangju.setVisibility(View.GONE);
+                    layout_daejeon.setVisibility(View.GONE);
+                    layout_ulsan.setVisibility(View.GONE);
+                    layout_sejong.setVisibility(View.GONE);
+                    layout_gyeonggi.setVisibility(View.GONE);
+                    layout_gangwon.setVisibility(View.GONE);
+                    layout_chungbuk.setVisibility(View.GONE);
+                    layout_chungnam.setVisibility(View.GONE);
+                    layout_jeonbuk.setVisibility(View.VISIBLE);
+                    layout_jeonnam.setVisibility(View.GONE);
+                    layout_gyeongbuk.setVisibility(View.GONE);
+                    layout_gyeongnam.setVisibility(View.GONE);
+                    layout_jeju.setVisibility(View.GONE);
+                    index_first = 12;
+                }
             }
         });
 
-        button_first[13].setOnClickListener(new Button.OnClickListener() {
-            public void onClick(View v) {
-                layout_seoul.setVisibility(View.GONE);
-                layout_pusan.setVisibility(View.GONE);
-                layout_daegu.setVisibility(View.GONE);
-                layout_incheon.setVisibility(View.GONE);
-                layout_gwangju.setVisibility(View.GONE);
-                layout_daejeon.setVisibility(View.GONE);
-                layout_ulsan.setVisibility(View.GONE);
-                layout_sejong.setVisibility(View.GONE);
-                layout_gyeonggi.setVisibility(View.GONE);
-                layout_gangwon.setVisibility(View.GONE);
-                layout_chungbuk.setVisibility(View.GONE);
-                layout_chungnam.setVisibility(View.GONE);
-                layout_jeonbuk.setVisibility(View.GONE);
-                layout_jeonnam.setVisibility(View.VISIBLE);
-                layout_gyeongbuk.setVisibility(View.GONE);
-                layout_gyeongnam.setVisibility(View.GONE);
-                layout_jeju.setVisibility(View.GONE);
-                index_first = 13;
+        button_first[13].setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            public void onCheckedChanged(CompoundButton arg0, boolean ischecked) {
+                if (!ischecked) {
+                    checkcount_first--;
+                } else {
+                    if (checkcount_first != 0) {
+                        arg_first.setChecked(false);
+                    }
+                    checkcount_first++;
+                    arg_first = arg0;
+                    layout_seoul.setVisibility(View.GONE);
+                    layout_pusan.setVisibility(View.GONE);
+                    layout_daegu.setVisibility(View.GONE);
+                    layout_incheon.setVisibility(View.GONE);
+                    layout_gwangju.setVisibility(View.GONE);
+                    layout_daejeon.setVisibility(View.GONE);
+                    layout_ulsan.setVisibility(View.GONE);
+                    layout_sejong.setVisibility(View.GONE);
+                    layout_gyeonggi.setVisibility(View.GONE);
+                    layout_gangwon.setVisibility(View.GONE);
+                    layout_chungbuk.setVisibility(View.GONE);
+                    layout_chungnam.setVisibility(View.GONE);
+                    layout_jeonbuk.setVisibility(View.GONE);
+                    layout_jeonnam.setVisibility(View.VISIBLE);
+                    layout_gyeongbuk.setVisibility(View.GONE);
+                    layout_gyeongnam.setVisibility(View.GONE);
+                    layout_jeju.setVisibility(View.GONE);
+                    index_first = 13;
+                }
             }
         });
 
-        button_first[14].setOnClickListener(new Button.OnClickListener() {
-            public void onClick(View v) {
-                layout_seoul.setVisibility(View.GONE);
-                layout_pusan.setVisibility(View.GONE);
-                layout_daegu.setVisibility(View.GONE);
-                layout_incheon.setVisibility(View.GONE);
-                layout_gwangju.setVisibility(View.GONE);
-                layout_daejeon.setVisibility(View.GONE);
-                layout_ulsan.setVisibility(View.GONE);
-                layout_sejong.setVisibility(View.GONE);
-                layout_gyeonggi.setVisibility(View.GONE);
-                layout_gangwon.setVisibility(View.GONE);
-                layout_chungbuk.setVisibility(View.GONE);
-                layout_chungnam.setVisibility(View.GONE);
-                layout_jeonbuk.setVisibility(View.GONE);
-                layout_jeonnam.setVisibility(View.GONE);
-                layout_gyeongbuk.setVisibility(View.VISIBLE);
-                layout_gyeongnam.setVisibility(View.GONE);
-                layout_jeju.setVisibility(View.GONE);
-                index_first = 14;
+        button_first[14].setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            public void onCheckedChanged(CompoundButton arg0, boolean ischecked) {
+                if (!ischecked) {
+                    checkcount_first--;
+                } else {
+                    if (checkcount_first != 0) {
+                        arg_first.setChecked(false);
+                    }
+                    checkcount_first++;
+                    arg_first = arg0;
+                    layout_seoul.setVisibility(View.GONE);
+                    layout_pusan.setVisibility(View.GONE);
+                    layout_daegu.setVisibility(View.GONE);
+                    layout_incheon.setVisibility(View.GONE);
+                    layout_gwangju.setVisibility(View.GONE);
+                    layout_daejeon.setVisibility(View.GONE);
+                    layout_ulsan.setVisibility(View.GONE);
+                    layout_sejong.setVisibility(View.GONE);
+                    layout_gyeonggi.setVisibility(View.GONE);
+                    layout_gangwon.setVisibility(View.GONE);
+                    layout_chungbuk.setVisibility(View.GONE);
+                    layout_chungnam.setVisibility(View.GONE);
+                    layout_jeonbuk.setVisibility(View.GONE);
+                    layout_jeonnam.setVisibility(View.GONE);
+                    layout_gyeongbuk.setVisibility(View.VISIBLE);
+                    layout_gyeongnam.setVisibility(View.GONE);
+                    layout_jeju.setVisibility(View.GONE);
+                    index_first = 14;
+                }
             }
         });
 
-        button_first[15].setOnClickListener(new Button.OnClickListener() {
-            public void onClick(View v) {
-                layout_seoul.setVisibility(View.GONE);
-                layout_pusan.setVisibility(View.GONE);
-                layout_daegu.setVisibility(View.GONE);
-                layout_incheon.setVisibility(View.GONE);
-                layout_gwangju.setVisibility(View.GONE);
-                layout_daejeon.setVisibility(View.GONE);
-                layout_ulsan.setVisibility(View.GONE);
-                layout_sejong.setVisibility(View.GONE);
-                layout_gyeonggi.setVisibility(View.GONE);
-                layout_gangwon.setVisibility(View.GONE);
-                layout_chungbuk.setVisibility(View.GONE);
-                layout_chungnam.setVisibility(View.GONE);
-                layout_jeonbuk.setVisibility(View.GONE);
-                layout_jeonnam.setVisibility(View.GONE);
-                layout_gyeongbuk.setVisibility(View.GONE);
-                layout_gyeongnam.setVisibility(View.VISIBLE);
-                layout_jeju.setVisibility(View.GONE);
-                index_first = 15;
+        button_first[15].setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            public void onCheckedChanged(CompoundButton arg0, boolean ischecked) {
+                if (!ischecked) {
+                    checkcount_first--;
+                } else {
+                    if (checkcount_first != 0) {
+                        arg_first.setChecked(false);
+                    }
+                    checkcount_first++;
+                    arg_first = arg0;
+                    layout_seoul.setVisibility(View.GONE);
+                    layout_pusan.setVisibility(View.GONE);
+                    layout_daegu.setVisibility(View.GONE);
+                    layout_incheon.setVisibility(View.GONE);
+                    layout_gwangju.setVisibility(View.GONE);
+                    layout_daejeon.setVisibility(View.GONE);
+                    layout_ulsan.setVisibility(View.GONE);
+                    layout_sejong.setVisibility(View.GONE);
+                    layout_gyeonggi.setVisibility(View.GONE);
+                    layout_gangwon.setVisibility(View.GONE);
+                    layout_chungbuk.setVisibility(View.GONE);
+                    layout_chungnam.setVisibility(View.GONE);
+                    layout_jeonbuk.setVisibility(View.GONE);
+                    layout_jeonnam.setVisibility(View.GONE);
+                    layout_gyeongbuk.setVisibility(View.GONE);
+                    layout_gyeongnam.setVisibility(View.VISIBLE);
+                    layout_jeju.setVisibility(View.GONE);
+                    index_first = 15;
+                }
             }
         });
 
-        button_first[16].setOnClickListener(new Button.OnClickListener() {
-            public void onClick(View v) {
-                layout_seoul.setVisibility(View.GONE);
-                layout_pusan.setVisibility(View.GONE);
-                layout_daegu.setVisibility(View.GONE);
-                layout_incheon.setVisibility(View.GONE);
-                layout_gwangju.setVisibility(View.GONE);
-                layout_daejeon.setVisibility(View.GONE);
-                layout_ulsan.setVisibility(View.GONE);
-                layout_sejong.setVisibility(View.GONE);
-                layout_gyeonggi.setVisibility(View.GONE);
-                layout_gangwon.setVisibility(View.GONE);
-                layout_chungbuk.setVisibility(View.GONE);
-                layout_chungnam.setVisibility(View.GONE);
-                layout_gyeongbuk.setVisibility(View.GONE);
-                layout_gyeongnam.setVisibility(View.GONE);
-                layout_jeonbuk.setVisibility(View.GONE);
-                layout_jeonnam.setVisibility(View.GONE);
-                layout_jeju.setVisibility(View.VISIBLE);
-                index_first = 16;
+        button_first[16].setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            public void onCheckedChanged(CompoundButton arg0, boolean ischecked) {
+                if (!ischecked) {
+                    checkcount_first--;
+                } else {
+                    if (checkcount_first != 0) {
+                        arg_first.setChecked(false);
+                    }
+                    checkcount_first++;
+                    arg_first = arg0;
+                    layout_seoul.setVisibility(View.GONE);
+                    layout_pusan.setVisibility(View.GONE);
+                    layout_daegu.setVisibility(View.GONE);
+                    layout_incheon.setVisibility(View.GONE);
+                    layout_gwangju.setVisibility(View.GONE);
+                    layout_daejeon.setVisibility(View.GONE);
+                    layout_ulsan.setVisibility(View.GONE);
+                    layout_sejong.setVisibility(View.GONE);
+                    layout_gyeonggi.setVisibility(View.GONE);
+                    layout_gangwon.setVisibility(View.GONE);
+                    layout_chungbuk.setVisibility(View.GONE);
+                    layout_chungnam.setVisibility(View.GONE);
+                    layout_gyeongbuk.setVisibility(View.GONE);
+                    layout_gyeongnam.setVisibility(View.GONE);
+                    layout_jeonbuk.setVisibility(View.GONE);
+                    layout_jeonnam.setVisibility(View.GONE);
+                    layout_jeju.setVisibility(View.VISIBLE);
+                    index_first = 16;
+                }
             }
         });
 
