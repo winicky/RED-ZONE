@@ -36,6 +36,8 @@
             android:launchMode="singleTop"></activity>
         <activity android:name=".pie_chart"
             android:launchMode="singleTop"></activity>
+        <activity android:name=".disaster_select"
+            android:launchMode="singleTop"></activity>
     </application>
 
 </manifest>
