@@ -6,10 +6,19 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
+    <TextView
+        android:id="@+id/location_name"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:textColor="#ffff0000"
+        android:background="#ffffffff"
+        android:textSize="30sp"
+        android:gravity="center_horizontal"/>
+
     <com.github.mikephil.charting.charts.PieChart
         android:id="@+id/pieChart"
         android:layout_width="match_parent"
-        android:layout_height="669dp" />
+        android:layout_height="680dp" />
 
     <Button
         android:id="@+id/text_list_button"

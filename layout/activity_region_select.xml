@@ -75,7 +75,7 @@
                         android:layout_weight="1">
 
                         <LinearLayout
-                            android:id="@+id/first_region_layout"
+                            android:id="@+id/layout_region_first"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:orientation="vertical" />
@@ -97,23 +97,16 @@
                         android:textSize="30sp" />
 
                     <ScrollView
-                        android:id="@+id/second_scrollview"
+                        android:id="@+id/scrollview_region_second"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:layout_weight="1"
                         android:visibility="visible">
 
                         <FrameLayout
-                            android:id="@+id/frame_second"
+                            android:id="@+id/frame_region_second"
                             android:layout_width="match_parent"
-                            android:layout_height="wrap_content">
-
-                            <LinearLayout
-                                android:id="@+id/second_region_layout"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:orientation="vertical"></LinearLayout>
-                        </FrameLayout>
+                            android:layout_height="wrap_content"/>
                     </ScrollView>
 
                 </LinearLayout>

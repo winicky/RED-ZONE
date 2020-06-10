@@ -8,7 +8,7 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="291dp"
         android:layout_weight="10"
         android:orientation="vertical">
 
@@ -40,7 +40,7 @@
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <Button
-            android:id="@+id/disease_select"
+            android:id="@+id/disaster_select"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="재난분류" />
@@ -100,45 +100,49 @@
                 android:id="@+id/editText4"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
+                android:layout_weight="6"
                 android:ems="10"
+                android:gravity="center"
                 android:inputType="textPersonName"
                 android:text="날짜" />
 
-            <EditText
-                android:id="@+id/editText"
+            <TextView
+                android:id="@+id/textview_start_date"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:ems="10"
-                android:hint="선택해주세요"
-                android:inputType="date" />
+                android:gravity="center"
+                android:text="TextView" />
 
             <EditText
                 android:id="@+id/editText3"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
+                android:layout_weight="7"
                 android:ems="10"
+                android:gravity="center"
                 android:inputType="textPersonName"
                 android:text="~" />
 
-            <EditText
-                android:id="@+id/editText2"
+            <TextView
+                android:id="@+id/textview_end_date"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:ems="10"
-                android:hint="선택해주세요"
-                android:inputType="date" />
+                android:gravity="center"
+                android:text="TextView" />
+
         </LinearLayout>
 
-        <CalendarView
-            android:id="@+id/calendarView"
+        <FrameLayout
+            android:id="@+id/frame_calendar"
             android:layout_width="match_parent"
-            android:layout_height="287dp"
-            android:longClickable="false"
-            android:visibility="invisible" />
+            android:layout_height="match_parent">
+
+        </FrameLayout>
+
     </LinearLayout>
 
     <LinearLayout
@@ -150,7 +154,7 @@
         <ImageButton
             android:id="@+id/reset"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:layout_weight="1"
             app:srcCompat="@android:drawable/ic_menu_revert" />
 
