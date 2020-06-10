@@ -346,8 +346,7 @@ public class MainActivity extends AppCompatActivity implements MapView.MapViewEv
             @Override
             public void onResponse(Call<CircleResponse> call, Response<CircleResponse> response) {
                 if (response.isSuccessful()) {
-                    //TextView textView = (TextView)findViewById(R.id.textView);
-                    //textView.setText(response.body().getCount().get(1).getWarningCount().toString());
+
                     CircleResponse body = response.body();
 
                     clearLocationInfo();
@@ -447,7 +446,7 @@ public class MainActivity extends AppCompatActivity implements MapView.MapViewEv
                     sumParentWarningCount += sumChildWarningCount;
                     Log.d("loadCircleAPI", "ParentInfoCount = " + sumParentInfoCount.toString() + " ParentWarningCount = " + sumParentWarningCount.toString());
                     Log.d("loadCircleAPI", "ChildInfoCount = " + sumChildInfoCount.toString() + " ChildWarningCount = " + sumChildWarningCount.toString());
-                    addCirclesParent(); // 필터 버튼 적용이 완료되면 addCirclesChild() 로 바꿀 것
+                    //addCirclesParent(); // 필터 버튼 적용이 완료되면 addCirclesChild() 로 바꿀 것
                 }
                 else {
                     int statusCode  = response.code();
@@ -840,6 +839,12 @@ public class MainActivity extends AppCompatActivity implements MapView.MapViewEv
                     mMapView.removeAllCircles();
                     loadCircleAPI(circleRequest);
                     changeFilterMapPoint(msgRequest.getLocation_code());
+                    if(mode == 0) {
+                        addCirclesChild();
+                    }
+                    else{
+                        addCirclesParent();
+                    }
                     isFirstMap++;
                 }
 
