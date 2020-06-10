@@ -14,7 +14,6 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
-import android.widget.TextView;
 import android.widget.Toast;
 
 
@@ -23,16 +22,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
-
-import com.geovengers.redzone.ApiUtils;
-import com.geovengers.redzone.CircleRequest;
-import com.geovengers.redzone.CircleResponse;
-import com.geovengers.redzone.MsgRequest;
-import com.geovengers.redzone.R;
-import com.geovengers.redzone.Service;
-import com.geovengers.redzone.message_list;
-import com.geovengers.redzone.pie_chart;
-import com.geovengers.redzone.set_filter;
 
 import net.daum.mf.map.api.MapCircle;
 import net.daum.mf.map.api.MapPoint;
@@ -47,7 +36,6 @@ import java.io.InputStreamReader;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import retrofit2.Call;
@@ -71,17 +59,24 @@ public class MainActivity extends AppCompatActivity implements MapView.MapViewEv
 
     private Service service = ApiUtils.getService();
 
-    private CircleRequest[] initRequest = new CircleRequest[3];
+    private CircleRequest[] initCircleRequest = new CircleRequest[3];
+    private MsgRequest[] initMsgRequest = new MsgRequest[3];
     private CircleRequest circleRequest = new CircleRequest();
     private MsgRequest msgRequest = new MsgRequest();
     private MsgResponse msgResponse = new MsgResponse();
+    //private MsgResponse[] tmpMsgResponse = new MsgResponse[3];
+    private MsgResponse tmpMsgResponse = new MsgResponse();
 
     private DrawerLayout drawerLayout;
     private View drawerView;
     private MapView mMapView;
     private MapPoint tempMapPoint;
+    private MapPoint filterMapPoint;
     private int isStart;
+    private int isFirstMap = 0;
     private int mode = 0; // 0(시군구) = zoom level 0~8, 1(도) = zoom level 9~
+
+    private String testString;
 
     public static final int numLocParent = 16;
     public static final int numLocChild = 229;
@@ -209,25 +204,35 @@ public class MainActivity extends AppCompatActivity implements MapView.MapViewEv
 
 
         for(int i=0; i<3; i++) {
-            initRequest[i] = new CircleRequest();
-            initRequest[i].setStart_date(start_date);
-            initRequest[i].setEnd_date(end_date);
-            initRequest[i].setDisaster_type(disaster_type);
-            initRequest[i].setDisaster_level(disaster_level);
+            initCircleRequest[i] = new CircleRequest();
+            initCircleRequest[i].setStart_date(start_date);
+            initCircleRequest[i].setEnd_date(end_date);
+            initCircleRequest[i].setDisaster_type(disaster_type);
+            initCircleRequest[i].setDisaster_level(disaster_level);
+
+            initMsgRequest[i] = new MsgRequest();
+            initMsgRequest[i].setStart_date(start_date);
+            initMsgRequest[i].setEnd_date(end_date);
+            initMsgRequest[i].setDisaster_type(disaster_type);
+            initMsgRequest[i].setDisaster_level(disaster_level);
         }
-        initRequest[0].setDisaster_group("기상특보");
-        initRequest[1].setDisaster_group("질병");
-        initRequest[2].setDisaster_group("other");
+        initCircleRequest[0].setDisaster_group("기상특보");
+        initCircleRequest[1].setDisaster_group("질병");
+        initCircleRequest[2].setDisaster_group("other");
+
+        initMsgRequest[0].setDisaster_group("기상특보");
+        initMsgRequest[1].setDisaster_group("질병");
+        initMsgRequest[2].setDisaster_group("other");
 
         clearCount();
-        initCircleAPI(initRequest[0]);
-        initCircleAPI(initRequest[1]);
-        initCircleAPI(initRequest[2]);
+        initCircleAPI(initCircleRequest[0]);
+        initCircleAPI(initCircleRequest[1]);
+        initCircleAPI(initCircleRequest[2]);
 
         addCirclesChild();
 
 
-        // 필터 쿼리 (loadCircleAPI)
+        // 필터 쿼리 (loadCircleAPI) 초기화
         start_date = new String("2020-01-01");
         end_date = new String("2020-05-10");
         disaster_group = new String("기상특보");
@@ -261,14 +266,26 @@ public class MainActivity extends AppCompatActivity implements MapView.MapViewEv
         detail_button.setOnClickListener(new OnClickListener(){
             @Override
             public void onClick(View v) {
-                msgRequest.setLocation_code(getNearLocCode());
-                msgRequest.setStart_date(circleRequest.getStart_date());
-                msgRequest.setEnd_date(circleRequest.getEnd_date());
-                msgRequest.setDisaster_group(circleRequest.getDisaster_group());
-                msgRequest.setDisaster_type(circleRequest.getDisaster_type());
-                msgRequest.setDisaster_level(circleRequest.getDisaster_level());
+                Intent detail_intent = new Intent(getApplicationContext(), pie_chart.class);
+                if(isFirstMap == 0) {
+                    initMsgRequest[0].setLocation_code(getNearLocCode());
+                    initMsgRequest[1].setLocation_code(getNearLocCode());
+                    initMsgRequest[2].setLocation_code(getNearLocCode());
+                    detail_intent.putExtra("msgRequest0", initMsgRequest[0]);
+                    detail_intent.putExtra("msgRequest1", initMsgRequest[1]);
+                    detail_intent.putExtra("msgRequest2", initMsgRequest[2]);
+                    detail_intent.putExtra("location_name", getNearLocName(getNearLocCode()));
+                    detail_intent.putExtra("mode", 0);
+                    startActivityForResult(detail_intent, PIECHART_REQUEST_CODE);
+                }
+                else{
+                    msgRequest.setLocation_code(getNearLocCode());
+                    detail_intent.putExtra("msgRequest", msgRequest);
+                    detail_intent.putExtra("location_name", getNearLocName(getNearLocCode()));
+                    detail_intent.putExtra("mode", 1);
+                    startActivityForResult(detail_intent, PIECHART_REQUEST_CODE);
+                }
 
-                loadMsgAPI(msgRequest);
                 Log.d("1번", "여기");
 
             }
@@ -287,9 +304,8 @@ public class MainActivity extends AppCompatActivity implements MapView.MapViewEv
         cp_button.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                //mMapView.setMapCenterPointAndZoomLevel(tempMapPoint, 5, false);
-                mMapView.removeAllCircles();
-                loadCircleAPI(circleRequest);
+                mMapView.setMapCenterPointAndZoomLevel(tempMapPoint, 5, true);
+
             }
         });
 
@@ -455,8 +471,7 @@ public class MainActivity extends AppCompatActivity implements MapView.MapViewEv
             @Override
             public void onResponse(Call<CircleResponse> call, Response<CircleResponse> response) {
                 if (response.isSuccessful()) {
-                    //TextView textView = (TextView)findViewById(R.id.textView);
-                    //textView.setText(response.body().getCount().get(1).getWarningCount().toString());
+
                     CircleResponse body = response.body();
 
                     for (int i = 0; i < body.getCount().size(); i++) {
@@ -564,34 +579,6 @@ public class MainActivity extends AppCompatActivity implements MapView.MapViewEv
 
             @Override
             public void onFailure(Call<CircleResponse> call, Throwable t) {
-                //showErrorMessage();
-                Log.d("MainActivity", "error loading from API");
-
-            }
-        });
-    }
-    public void loadMsgAPI(MsgRequest msgRequest) {
-        service.getMsgAPI(msgRequest).enqueue(new Callback<MsgResponse>() {
-            @Override
-            public void onResponse(Call<MsgResponse> call, Response<MsgResponse> response) {
-                if(response.isSuccessful()) {
-                    msgResponse = response.body();
-                    Log.d("2번", "여기");
-                    //mAdapter.updateAnswers(response.body().getItems());
-                    Log.d("MainActivity", "posts loaded from API" + msgResponse.getEndDate());
-
-                    Intent detail_intent = new Intent(getApplicationContext(), pie_chart.class);
-                    detail_intent.putExtra("msgResponse", msgResponse);
-                    detail_intent.putExtra("location_name", getNearLocName(getNearLocCode()));
-                    startActivityForResult(detail_intent, PIECHART_REQUEST_CODE);
-                }else {
-                    int statusCode  = response.code();
-                    // handle request errors depending on status code
-                }
-            }
-
-            @Override
-            public void onFailure(Call<MsgResponse> call, Throwable t) {
                 //showErrorMessage();
                 Log.d("MainActivity", "error loading from API");
 
@@ -839,6 +826,24 @@ public class MainActivity extends AppCompatActivity implements MapView.MapViewEv
                 }
 
                 break;
+
+            case FILTER_REQUEST_CODE :
+                if (resultCode == RESULT_OK) {
+                    Log.d("여기여기ㅣ여기", "호호22222");
+                    msgRequest = (MsgRequest)data.getSerializableExtra("TOTAL_BUNDLE");
+                    Log.d("여기여기ㅣ여기", "호호3333" + msgRequest.getLocation_code());
+                    circleRequest.setStart_date(msgRequest.getStart_date());
+                    circleRequest.setEnd_date(msgRequest.getEnd_date());
+                    circleRequest.setDisaster_group(msgRequest.getDisaster_group());
+                    circleRequest.setDisaster_type(msgRequest.getDisaster_type());
+                    circleRequest.setDisaster_level(msgRequest.getDisaster_level());
+                    mMapView.removeAllCircles();
+                    loadCircleAPI(circleRequest);
+                    changeFilterMapPoint(msgRequest.getLocation_code());
+                    isFirstMap++;
+                }
+
+                break;
         }
     }
 
@@ -901,6 +906,28 @@ public class MainActivity extends AppCompatActivity implements MapView.MapViewEv
             }
         }
         return null;
+    }
+
+    private void changeFilterMapPoint(String location_code){
+
+        String temp = location_code;
+        Log.d("하하", "5555" + temp.substring(2,10));
+        if(temp.substring(2,10).equals("00000000")){
+            for(int i=0; i<numLocParent; i++) {
+                if (temp.equals(locParent[i].locationCode)) {
+                    Log.d("하하z", "6666");
+                    mMapView.setMapCenterPointAndZoomLevel(MapPoint.mapPointWithGeoCoord(locParent[i].latitude, locParent[i].longitude), 9, true);
+                }
+            }
+        }
+        else{
+            for(int i=0; i<numLocChild; i++){
+                if(temp.equals(locChild[i].locationCode)){
+                    Log.d("하하zz", "6666");
+                    mMapView.setMapCenterPointAndZoomLevel(MapPoint.mapPointWithGeoCoord(locChild[i].latitude, locChild[i].longitude), 5, true);
+                }
+            }
+        }
     }
 
     private void addCirclesParent() {

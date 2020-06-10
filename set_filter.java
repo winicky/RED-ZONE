@@ -2,16 +2,23 @@ package com.geovengers.redzone;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CalendarView;
+import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 import android.widget.ToggleButton;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 public class set_filter extends AppCompatActivity {
 
@@ -24,48 +31,45 @@ public class set_filter extends AppCompatActivity {
     boolean status_info = false;
     boolean status_warning = false;
 
-    Date start_date = new Date();
-    Date end_date = new Date();
-
     public static final int REQUEST_CODE_FILTER = 1001;
     public static final int REQUEST_CODE_DISEASE = 1002;
     public static final int REQUEST_CODE_REGION = 1003;
 
 
-    Bundle total_bundle = new Bundle();
+    Bundle total_bundle = new Bundle();             //  region_select -> set_filter로 받는 번들
     String code_region = new String();
     String name_region = new String();
-    String disease = new String();
-    int info=0, warning=0;
-    String startdate = new String();
-    String enddate = new String();
 
+    String start_date = new String();
+    String end_date = new String();
+
+    MsgRequest bundle = new MsgRequest();           //  set_filter -> mainActivity로 쏘는 번들
 
     int num_first = 17;
     int i= 0;
+    LinearLayout temp;
+    List<String> disaster_type = new ArrayList<>();
+    List<String> disaster_level = new ArrayList<>();
+    String disaster_group = new String();
+
+    CalendarView start_calendar;
+    CalendarView end_calendar;
+    FrameLayout frame_calendar;
+    TextView textview_start_date;
+    TextView textview_end_date;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_set_filter);
 
-        String[] name_first = new String[num_first];            //  1차 지역의 이름을 저장
-        String[] code_first = new String[num_first];            //  1차 지역의 법정동 코드를 저장
-        for (i = 0; i < num_first; i++) {
-            if (i < 7) {
-                name_first[i] = MainActivity.locParent[i].locationName;
-                code_first[i] = MainActivity.locParent[i].locationCode;
-            }
-            else if (i == 7) {                                           //  i=7 : 세종
-                name_first[i] = "세종특별자치시";                       //  선택용 UI를 하나 만들어주고
-                code_first[i] = "3611000000";                       //  값은 강제로 설정
-            }
-            else {
-                name_first[i] = MainActivity.locParent[i-1].locationName;
-                code_first[i] = MainActivity.locParent[i-1].locationCode;
-            }
-        }
+        start_calendar = new CalendarView(this);
+        end_calendar = new CalendarView(this);
+        frame_calendar = (FrameLayout) findViewById(R.id.frame_calendar);
+        textview_start_date = (TextView) findViewById(R.id.textview_start_date);
+        textview_end_date = (TextView) findViewById(R.id.textview_end_date);
 
+        code_region = null;
 
         ImageButton b_reset = (ImageButton) findViewById(R.id.reset);
         b_reset.setOnClickListener(new Button.OnClickListener() {
@@ -75,23 +79,49 @@ public class set_filter extends AppCompatActivity {
                 status_info = false;
                 b_warning.setChecked(false);
                 status_warning = false;
+                code_region = null;
+                disaster_type.clear();
             }
         });
+
+
+
 
         ImageButton b_apply = (ImageButton) findViewById(R.id.apply);
         b_apply.setOnClickListener(new Button.OnClickListener() {
             public void onClick(View v) {
                 // 필터 설정을 전부 파라미터로 넘기고 MainActivity로 이동(finish)
-                Intent return_filter_intent = new Intent(getApplicationContext(), MainActivity.class);
-                total_bundle.putString("CODE_REGION", code_region);
-                total_bundle.putString("DISEASE", disease);
-                total_bundle.putInt("INFO", info);
-                total_bundle.putInt("WARNING", warning);
-                total_bundle.putString("STARTDATE", startdate);
-                total_bundle.putString("ENDDATE", enddate);
-                return_filter_intent.putExtra("TOTAL_BUNDLE", total_bundle);
-                setResult(REQUEST_CODE_FILTER, return_filter_intent);
-                finish();
+                if (code_region == null){
+                    Toast.makeText(set_filter.this, "지역을 선택해 주세요.", Toast.LENGTH_LONG).show();
+                }
+                else if (disaster_type.isEmpty()){
+                    Toast.makeText(set_filter.this, "재난을 선택해 주세요.", Toast.LENGTH_LONG).show();
+                }
+                else {
+                    Intent return_filter_intent = new Intent(getApplicationContext(), MainActivity.class);
+
+                    if (b_info.isChecked()) {
+                        disaster_level.add("info");
+                    }
+                    if (b_warning.isChecked()) {
+                        disaster_level.add("warning");
+                    }
+                    if (!b_info.isChecked() && !b_warning.isChecked()) {
+                        disaster_level.add("info");
+                        disaster_level.add("warning");
+                    }
+                    bundle.setDisaster_level(disaster_level);
+                    bundle.setDisaster_group(disaster_group);
+                    bundle.setDisaster_type(disaster_type);
+                    bundle.setLocation_code(code_region);
+                    bundle.setStart_date(start_date);
+                    bundle.setEnd_date(end_date);
+                    bundle.setLocation_code(code_region);
+
+                    return_filter_intent.putExtra("TOTAL_BUNDLE", bundle);
+                    setResult(RESULT_OK, return_filter_intent);
+                    finish();
+                }
             }
         });
 
@@ -105,11 +135,11 @@ public class set_filter extends AppCompatActivity {
             }
         });
 
-        Button b_disease_select = (Button) findViewById(R.id.disease_select);
-        b_disease_select.setOnClickListener(new Button.OnClickListener() {
+        Button b_disaster_select = (Button) findViewById(R.id.disaster_select);
+        b_disaster_select.setOnClickListener(new Button.OnClickListener() {
             public void onClick(View v) {
-                Intent go_disease_intent = new Intent(set_filter.this, disease_select.class);
-                startActivityForResult(go_disease_intent, REQUEST_CODE_DISEASE);
+                Intent go_disaster_intent = new Intent(set_filter.this, disaster_select.class);
+                startActivityForResult(go_disaster_intent, REQUEST_CODE_DISEASE);
             }
         });
 
@@ -145,6 +175,48 @@ public class set_filter extends AppCompatActivity {
             }
         });
 
+        textview_start_date.setText("Start_date");
+        textview_start_date.setOnClickListener(new View.OnClickListener(){
+            public void onClick(View v){
+                end_calendar.setVisibility(View.INVISIBLE);
+                start_calendar.setVisibility(View.VISIBLE);
+            }
+        });
+
+        textview_end_date.setText("end_date");
+        textview_end_date.setOnClickListener(new View.OnClickListener(){
+            public void onClick(View v){
+                start_calendar.setVisibility(View.INVISIBLE);
+                end_calendar.setVisibility(View.VISIBLE);
+            }
+        });
+
+
+        frame_calendar.addView(start_calendar);
+        start_calendar.setVisibility(View.INVISIBLE);
+        start_calendar.setOnDateChangeListener(new CalendarView.OnDateChangeListener() {
+            @Override
+            public void onSelectedDayChange(@NonNull CalendarView view, int year, int month, int dayOfMonth) {
+                start_date = year + "-" + (month+1) + "-" + dayOfMonth;
+                textview_start_date.setText(start_date);
+                start_calendar.setVisibility(View.INVISIBLE);
+            }
+        });
+
+        frame_calendar.addView(end_calendar);
+        end_calendar.setVisibility(View.INVISIBLE);
+        end_calendar.setOnDateChangeListener(new CalendarView.OnDateChangeListener() {
+            @Override
+            public void onSelectedDayChange(@NonNull CalendarView view, int year, int month, int dayOfMonth) {
+                end_date = year + "-" + (month+1) + "-" + dayOfMonth;
+                textview_end_date.setText(end_date);
+                end_calendar.setVisibility(View.INVISIBLE);
+            }
+        });
+
+
+
+
 
     }
 
@@ -152,14 +224,21 @@ public class set_filter extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         // Check which request we're responding to
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == REQUEST_CODE_FILTER) {
-            if (resultCode == RESULT_OK) {
-                total_bundle = data.getBundleExtra("BUNDLE");
-                code_region = total_bundle.getString("PARAMETER_CODE");
-                name_region = total_bundle.getString("PARAMETER_NAME");
-
-
-            }
+        switch (requestCode){
+            case (REQUEST_CODE_REGION) :
+                if (resultCode == RESULT_OK) {
+                    total_bundle = data.getBundleExtra("REGION_BUNDLE");
+                    code_region = total_bundle.getString("PARAMETER_CODE");
+                    name_region = total_bundle.getString("PARAMETER_NAME");
+                }
+                break;
+            case (REQUEST_CODE_DISEASE) :
+                if (resultCode == RESULT_OK) {
+                    MsgRequest disasterRequest = (MsgRequest) data.getSerializableExtra("DISASTER_LIST");
+                    disaster_type = disasterRequest.getDisaster_type();
+                    disaster_group = disasterRequest.getDisaster_group();
+                    //  'data' 인텐트에서 getSerializableExtra로 MsgRequest 객체를 번들로 받아 그 안에 저장한 Disaster_type을 저장
+                }
         }
     }
     /*
