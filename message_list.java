@@ -42,6 +42,7 @@ public class message_list extends AppCompatActivity {
     private MsgResponse[] tmpMsgResponse = new MsgResponse[3];
     private List<Message> message = new ArrayList<Message>();
     private AlertDialog dialog;
+    private Toast toast;
 
     private Service service = ApiUtils.getService();
 
@@ -134,7 +135,11 @@ public class message_list extends AppCompatActivity {
                                     btn.setOnClickListener(new View.OnClickListener() {
                                         @Override
                                         public void onClick(View v) {
-                                            Toast.makeText(message_list.this, temp, (Toast.LENGTH_LONG)*2).show();
+                                            //toast.cancel();
+                                            //toast = new Toast;
+                                            //toast = Toast.makeText(message_list.this, temp, (Toast.LENGTH_LONG)*3);
+                                            //toast.show();
+                                            showToast(message_list.this, temp);
                                         }
                                     });
                                 }
@@ -211,7 +216,6 @@ public class message_list extends AppCompatActivity {
                             Collections.sort(messagesForSort);
                             Collections.reverse(messagesForSort);
 
-                            deleteProgressDialog();
 
                             for(int i=0; i<msgResponse.getMessage().size(); i++){
                                 final String temp = messagesForSort.get(i);
@@ -230,6 +234,8 @@ public class message_list extends AppCompatActivity {
                                     }
                                 });
                             }
+
+
 
                             search_view.setOnQueryTextListener(new SearchView.OnQueryTextListener(){
                                 @Override
@@ -256,7 +262,11 @@ public class message_list extends AppCompatActivity {
                                             btn.setOnClickListener(new View.OnClickListener() {
                                                 @Override
                                                 public void onClick(View v) {
-                                                    Toast.makeText(message_list.this, temp, (Toast.LENGTH_SHORT)*2).show();
+                                                    //toast.cancel();
+                                                    //toast = new Toast;
+                                                    //toast = Toast.makeText(message_list.this, temp, (Toast.LENGTH_LONG)*3);
+                                                    //toast.show();
+                                                    showToast(message_list.this, temp);
                                                 }
                                             });
                                         }
@@ -265,6 +275,7 @@ public class message_list extends AppCompatActivity {
                                     return false;
                                 }
                             });
+                            deleteProgressDialog();
                         }
 
                     } else {
@@ -332,6 +343,16 @@ public class message_list extends AppCompatActivity {
 
     public void deleteProgressDialog() {
         dialog.dismiss();
+    }
+
+    public void showToast(Context context, String message) {
+        if (toast == null) {
+            toast = Toast.makeText(context, message, (Toast.LENGTH_LONG)*3);
+        }
+        else {
+            toast.setText(message);
+        }
+        toast.show();
     }
 
 }

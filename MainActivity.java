@@ -16,7 +16,6 @@ import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.Toast;
 
-
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
@@ -44,15 +43,6 @@ import retrofit2.Response;
 
 import static android.view.View.*;
 
-class LocationInfo {
-    String locationName;
-    double latitude;
-    double longitude;
-    String locationCode;
-    int infoCount;
-    int warningCount;
-}
-
 public class MainActivity extends AppCompatActivity implements MapView.MapViewEventListener, MapView.CurrentLocationEventListener, MapReverseGeoCoder.ReverseGeoCodingResultListener {
 
     private static final String LOG_TAG = "MainActivity";
@@ -63,20 +53,17 @@ public class MainActivity extends AppCompatActivity implements MapView.MapViewEv
     private MsgRequest[] initMsgRequest = new MsgRequest[3];
     private CircleRequest circleRequest = new CircleRequest();
     private MsgRequest msgRequest = new MsgRequest();
-    private MsgResponse msgResponse = new MsgResponse();
-    //private MsgResponse[] tmpMsgResponse = new MsgResponse[3];
-    private MsgResponse tmpMsgResponse = new MsgResponse();
-
     private DrawerLayout drawerLayout;
+
     private View drawerView;
     private MapView mMapView;
     private MapPoint tempMapPoint;
-    private MapPoint filterMapPoint;
+
     private int isStart;
     private int isFirstMap = 0;
     private int mode = 0; // 0(시군구) = zoom level 0~8, 1(도) = zoom level 9~
-
-    private String testString;
+    private int isNavigation = 0;
+    private long pressTime;
 
     public static final int numLocParent = 16;
     public static final int numLocChild = 229;
@@ -250,15 +237,8 @@ public class MainActivity extends AppCompatActivity implements MapView.MapViewEv
         open_button.setOnClickListener(new OnClickListener(){
             @Override
             public void onClick(View v) {
+                isNavigation = 1;
                 drawerLayout.openDrawer(drawerView);
-            }
-        });
-
-        Button close_button = (Button)findViewById(R.id.close_button);
-        close_button.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                drawerLayout.closeDrawers();
             }
         });
 
@@ -590,6 +570,22 @@ public class MainActivity extends AppCompatActivity implements MapView.MapViewEv
         super.onDestroy();
         mMapView.setCurrentLocationTrackingMode(MapView.CurrentLocationTrackingMode.TrackingModeOff);
         mMapView.setShowCurrentLocationMarker(false);
+    }
+
+    @Override
+    public void onBackPressed() {
+        if(isNavigation == 1){
+            drawerLayout.closeDrawers();
+            isNavigation = 0;
+        }
+        else {
+            if (System.currentTimeMillis() - pressTime < 2000) {
+                finishAffinity();
+                return;
+            }
+            Toast.makeText(this, "한 번더 누르시면 앱이 종료됩니다", Toast.LENGTH_LONG).show();
+            pressTime = System.currentTimeMillis();
+        }
     }
 
     @Override
@@ -1006,4 +1002,5 @@ public class MainActivity extends AppCompatActivity implements MapView.MapViewEv
         sumChildInfoCount = 0;
         sumChildWarningCount = 0;
     }
+
 }
