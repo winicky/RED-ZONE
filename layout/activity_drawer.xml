@@ -5,19 +5,48 @@
     android:layout_width="240dp"
     android:layout_height="match_parent"
     android:layout_gravity="start"
-    android:background="#B15757"
+    android:background="#FFFFFF"
     android:orientation="vertical">
-
-    <Button
-        android:id="@+id/close_button"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="메뉴닫기"/>
 
     <TextView
         android:layout_width="match_parent"
+        android:layout_height="70dp"
+        android:gravity="center_vertical"
+        android:textColor="#000000"
+        android:paddingLeft="15dp"
+        android:text="메뉴"
+        android:textSize="30sp" />
+
+    <Button
+        android:id="@+id/notice"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:background="#FFFFFF"
+        android:gravity="center_vertical"
+        android:paddingLeft="15dp"
+        android:text="공지사항"
+        android:textSize="25sp" />
+
+    <Button
+        android:id="@+id/copyright"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:background="#FFFFFF"
+        android:gravity="center_vertical"
+        android:paddingLeft="15dp"
+        android:text="copyright"
+        android:textSize="25sp" />
+
+    <TextView
+        android:id="@+id/version"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:gravity="center"
-        android:text="안드로이드메뉴" />
+        android:gravity="center_vertical"
+        android:paddingTop="490dp"
+        android:paddingLeft="20dp"
+        android:text="v1.0"
+        android:textColor="#000000"
+        android:textSize="25sp" />
+
 
 </LinearLayout>

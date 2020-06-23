@@ -21,7 +21,7 @@
             android:id="@+id/open_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="열려라참께"
+            android:text="MENU"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
