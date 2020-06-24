@@ -288,6 +288,7 @@ public class region_select extends AppCompatActivity {
                     //  여기부터는 인텐트에 번들을 담아 다시 쏜다
                     Intent return_region_intent = new Intent();
                     Bundle region_bundle = new Bundle();
+                    region_bundle.putString("FIRST_NAME", arg_first.getText().toString());
                     region_bundle.putString("PARAMETER_CODE", parameter_code);
                     region_bundle.putString("PARAMETER_NAME", parameter_name);
                     return_region_intent.putExtra("REGION_BUNDLE", region_bundle);

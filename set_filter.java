@@ -45,6 +45,7 @@ public class set_filter extends AppCompatActivity {
     int is_calendar_on = 0;
 
     Bundle total_bundle = new Bundle();             //  region_select -> set_filter로 받는 번들
+    String first_name = new String();
     String code_region = new String();
     String name_region = new String();
 
@@ -313,9 +314,10 @@ public class set_filter extends AppCompatActivity {
             case (REQUEST_CODE_REGION) :
                 if (resultCode == RESULT_OK) {
                     total_bundle = data.getBundleExtra("REGION_BUNDLE");
+                    first_name = total_bundle.getString("FIRST_NAME");
                     code_region = total_bundle.getString("PARAMETER_CODE");
                     name_region = total_bundle.getString("PARAMETER_NAME");
-                    current_region.setText("현재 지역 설정 값 : " + name_region);
+                    current_region.setText("현재 지역 설정 값 : " + first_name + " " + name_region);
                 }
                 break;
             case (REQUEST_CODE_DISEASE) :
