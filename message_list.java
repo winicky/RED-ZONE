@@ -1,4 +1,4 @@
-package org.techtown.redzone;
+package com.geovengers.redzone;
 
 import android.app.AlertDialog;
 import android.content.Context;

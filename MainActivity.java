@@ -1,4 +1,4 @@
-package org.techtown.redzone;
+package com.geovengers.redzone;
 
 import android.Manifest;
 import android.app.AlertDialog;
@@ -84,6 +84,7 @@ public class MainActivity extends AppCompatActivity implements MapView.MapViewEv
     private static final int PERMISSIONS_REQUEST_CODE = 100;
     private static final int FILTER_REQUEST_CODE = 1001;
     private static final int PIECHART_REQUEST_CODE = 3001;
+    private static final int NOTICE_REQUEST_CODE = 4001;
 
     String[] REQUIRED_PERMISSIONS  = {Manifest.permission.ACCESS_FINE_LOCATION};
 
@@ -99,6 +100,7 @@ public class MainActivity extends AppCompatActivity implements MapView.MapViewEv
         drawerView = (View)findViewById(R.id.drawer);
         mMapView = (MapView) findViewById(R.id.map_view);
         assetManager = getResources().getAssets();
+        final String copyright = "제작 : Team 거벤져스 (서태후 박승록 박예찬 육영훈)\nTEL : 010-8735-8717 (서태후)";
 
         InputStream inputStream = null;
 
@@ -289,6 +291,23 @@ public class MainActivity extends AppCompatActivity implements MapView.MapViewEv
             public void onClick(View v) {
                 mMapView.setMapCenterPointAndZoomLevel(tempMapPoint, 5, true);
 
+            }
+        });
+
+        Button notice_button = (Button)findViewById(R.id.notice);
+        notice_button.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent notice_intent = new Intent(getApplicationContext(), Notice.class);
+                startActivityForResult(notice_intent, NOTICE_REQUEST_CODE);
+            }
+        });
+
+        Button copyright_button = (Button)findViewById(R.id.copyright);
+        copyright_button.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(MainActivity.this, copyright, (Toast.LENGTH_LONG)*2).show();
             }
         });
 
