@@ -29,8 +29,6 @@
 
         <activity android:name=".MainActivity">
         </activity>
-        <activity android:name=".disease_select"
-            android:launchMode="singleTop"></activity>
         <activity android:name=".set_filter"
             android:launchMode="singleTop"></activity>
         <activity android:name=".region_select"
