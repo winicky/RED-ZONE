@@ -10,14 +10,15 @@
     android:orientation="vertical">
 
     <TextView
-        android:id="@+id/textView5"
+        android:id="@+id/menu"
         android:layout_width="match_parent"
         android:layout_height="70dp"
         android:gravity="center_vertical"
         android:paddingLeft="15dp"
-        android:text="메뉴"
+        android:text="메 뉴"
         android:textColor="#000000"
         android:textSize="30sp"
+        android:fontFamily="@font/kobold"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.0" />
@@ -31,10 +32,11 @@
         android:paddingLeft="15dp"
         android:text="공지사항"
         android:textSize="25sp"
+        android:fontFamily="@font/kobold"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView5"
+        app:layout_constraintTop_toBottomOf="@+id/menu"
         app:layout_constraintVertical_bias="0.0" />
 
     <Button
@@ -46,6 +48,7 @@
         android:paddingLeft="15dp"
         android:text="copyright"
         android:textSize="25sp"
+        android:fontFamily="@font/kobold"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/notice"
