@@ -112,10 +112,14 @@ public class set_filter extends AppCompatActivity {
                 status_warning = false;
                 code_region = null;
                 disaster_type.clear();
+                start_date = "";
+                end_date = "";
                 Toast.makeText(set_filter.this, "초기화 되었습니다.", Toast.LENGTH_LONG).show();
                 current_disaster_first.setText("현재 재난 1차 설정 값 : ");
                 current_disaster_second.setText("현재 재난 2차 설정 값 : ");
                 current_region.setText("현재 지역 설정 값 : ");
+                textview_start_date.setText(start_date);
+                textview_end_date.setText(end_date);
             }
         });
 
@@ -222,7 +226,6 @@ public class set_filter extends AppCompatActivity {
             }
         });
 
-        textview_start_date.setText("Start_date");
         textview_start_date.setOnClickListener(new View.OnClickListener(){
             public void onClick(View v){
                 is_calendar_on = 1;
@@ -232,7 +235,6 @@ public class set_filter extends AppCompatActivity {
             }
         });
 
-        textview_end_date.setText("End_date");
         textview_end_date.setOnClickListener(new View.OnClickListener(){
             public void onClick(View v){
                 is_calendar_on = 2;
