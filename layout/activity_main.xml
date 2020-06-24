@@ -18,10 +18,15 @@
             android:layout_height="match_parent" />
 
         <Button
-            android:id="@+id/open_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="MENU"
+            android:id="@+id/menu_button"
+            android:layout_width="50dp"
+            android:layout_height="45dp"
+            android:background="@drawable/square_shape"
+            android:drawableLeft="@drawable/menu_icon"
+            android:paddingLeft="10dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginLeft="16dp"
+            android:layout_marginTop="18dp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
@@ -30,35 +35,43 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:background="@drawable/curved_rect"
-            android:drawableLeft="@drawable/filter_drawable_left"
+            android:drawableLeft="@drawable/filter_icon"
             android:drawablePadding="-10dp"
             android:paddingLeft="15dp"
             android:text="필터"
             android:textSize="20sp"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/cp_button"
-            app:layout_constraintHorizontal_bias="0.62"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.498"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.979" />
+            app:layout_constraintVertical_bias="0.97" />
 
-        <ImageButton
+        <Button
             android:id="@+id/cp_button"
-            android:layout_width="55dp"
-            android:layout_height="55dp"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:background="@drawable/circle_shape"
+            android:drawableLeft="@drawable/cp_icon"
+            android:paddingLeft="10dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.991"
+            app:layout_constraintHorizontal_bias="0.955"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.989"
-            app:srcCompat="@drawable/current_position_bg" />
+            app:layout_constraintVertical_bias="0.97" />
 
         <Button
             android:id="@+id/detail_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="상세보기"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:background="@drawable/circle_shape"
+            android:drawableLeft="@drawable/piechart_icon"
+            android:paddingLeft="0dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginRight="16dp"
+            android:src="@drawable/piechart_icon"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
