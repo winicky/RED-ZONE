@@ -1,24 +1,19 @@
 package com.geovengers.redzone;
 
 import android.content.Intent;
-import android.graphics.Color;
-import android.graphics.ComposePathEffect;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.ScrollView;
-import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import java.util.Arrays;
-import java.util.HashMap;
 import java.util.StringTokenizer;
 
 /*class test_structure{
@@ -131,6 +126,8 @@ public class region_select extends AppCompatActivity {
     CompoundButton arg_second;                                          //  2차지역이 동시에 2개 이상 선택되었는지 확인하기 위한 변수(onCheckedChange 리스너에 들어감)
     CompoundButton arg_first;                                           //  1차지역이 동시에 2개 이상 선택되었는지 확인하기 위한 변수(onCheckedChange 리스너에 들어감)
 
+    ImageView help_region_select;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -140,7 +137,7 @@ public class region_select extends AppCompatActivity {
         b_reset.setOnClickListener(new Button.OnClickListener() {
             public void onClick(View v) {                                          //  리셋 버튼을 누르면
                 parameter_code = null;                                              //  번들에 넣을 코드값과
-                parameter_name = null;                                              //  이름값을 초기화 하고
+                parameter_name = null;                                              //  이름값을 초기화 하고 
                 if (arg_second != null && arg_second.isChecked()) {
                     arg_second.setChecked(false);                                       //  마지막으로 선택한 2차지역 버튼과
                 }
@@ -150,6 +147,8 @@ public class region_select extends AppCompatActivity {
                 arg_second = null;                                                  //  체크 상태와
                 arg_first = null;                                                   //  존재를 초기화하고
                 index_first = 0;                                                    //  1차지역 선택 현황도 초기화
+
+                Toast.makeText(region_select.this, "초기화 되었습니다.", Toast.LENGTH_LONG).show();
             }
         });
 
@@ -296,18 +295,26 @@ public class region_select extends AppCompatActivity {
             }
         });
 
-        ImageButton b_exit = (ImageButton) findViewById(R.id.exit);                         //  종료 버튼
-        b_exit.setOnClickListener(new Button.OnClickListener() {                            //  버튼을 누르면
-            public void onClick(View v) {                                                   //  일단은 그냥 뒤로가기로 해놨는데
-                //  뒤로가기
-                onBackPressed();                                                            //  그냥 뒤로가기로 해 두면 될듯
+
+        help_region_select = findViewById(R.id.help_region_select);
+        help_region_select.setOnClickListener(new View.OnClickListener(){
+            public void onClick(View v){
+                help_region_select.setVisibility(View.INVISIBLE);
             }
         });
+        help_region_select.setVisibility(View.INVISIBLE);
 
-
+        ImageButton b_help = (ImageButton) findViewById(R.id.help);
+        b_help.setOnClickListener(new Button.OnClickListener() {                            //  버튼을 누르면
+            public void onClick(View v) {
+               help_region_select.setVisibility(View.VISIBLE);
+            }
+        });
+        
+        
         //  여기부터는 데이터를 MainActivity에서 읽어온 csv 데이터를 가져와서
         //  미리 배열에 저장해둠
-
+        
         //  1차지역 데이터()
         for (i = 0; i < num_first; i++) {
             if (i < 7) {
@@ -496,7 +503,7 @@ public class region_select extends AppCompatActivity {
         FrameLayout frame_second = (FrameLayout) findViewById(R.id.frame_region_second);
         //  2차지역은 "layout_1차지역 이름" 이라는 LinearLayout 안에 들어가있는데, 해당 layout들을 1개씩만 출력하기 위해
         //  FrameLayout 안에 각 layout을 추가했음.
-
+        
         //  지역별로 개별 레이아웃을 만들어 2차지역 프레임레이아웃에 삽입
         final LinearLayout layout_seoul = new LinearLayout(this);       //  서울
         layout_seoul.setOrientation(LinearLayout.VERTICAL);

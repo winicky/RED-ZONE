@@ -7,15 +7,12 @@ import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.ScrollView;
-import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
 
 import androidx.appcompat.app.AppCompatActivity;
-
-import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,7 +31,7 @@ public class disaster_select extends AppCompatActivity {
 
     String disaster_group = new String();
 
-    public static List<String> disaster_list = new ArrayList<>();
+    public static List<String> disaster_list;
 
     public LinearLayout layout_all;
 
@@ -43,16 +40,15 @@ public class disaster_select extends AppCompatActivity {
     String[] name_weather = new String[NUM_WEATHER];
     String[] name_disease = new String[NUM_DISEASE];
     String[] name_other = new String[NUM_OTHER];
-
+    ImageView help_disaster_select;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_disaster_select);
 
         layout_all = new LinearLayout(this);
+        disaster_list = new ArrayList<>();
 
-        /*disaster_list = null;
-        disaster_group = null;*/
 
         ImageButton b_reset = (ImageButton) findViewById(R.id.reset);
         b_reset.setOnClickListener(new Button.OnClickListener() {
@@ -69,6 +65,8 @@ public class disaster_select extends AppCompatActivity {
 
                 checkcount_first = 0;
                 checkcount_second = 0;
+
+                Toast.makeText(disaster_select.this, "초기화 되었습니다.", Toast.LENGTH_LONG).show();
             }
         });
 
@@ -95,13 +93,18 @@ public class disaster_select extends AppCompatActivity {
             }
         });
 
-        ImageButton b_exit = (ImageButton) findViewById(R.id.exit);
-        b_exit.setOnClickListener(new Button.OnClickListener() {
+        help_disaster_select = findViewById(R.id.help_disaster_select);
+        help_disaster_select.setOnClickListener(new View.OnClickListener(){
+            public void onClick(View v){
+                help_disaster_select.setVisibility(View.INVISIBLE);
+            }
+        });
+        help_disaster_select.setVisibility(View.INVISIBLE);
+
+        ImageButton b_help = (ImageButton) findViewById(R.id.help);
+        b_help.setOnClickListener(new Button.OnClickListener() {
             public void onClick(View v) {
-
-                //  필터 전부 해제 후 뒤로가기
-
-                onBackPressed();
+                help_disaster_select.setVisibility(View.VISIBLE);
             }
         });
 
