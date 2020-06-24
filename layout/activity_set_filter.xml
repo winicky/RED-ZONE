@@ -27,6 +27,7 @@
                     android:layout_height="wrap_content"
                     android:gravity="center_horizontal"
                     android:text="필터"
+                    android:fontFamily="@font/kobold"
                     android:textSize="30sp"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
@@ -49,13 +50,15 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:backgroundTint="#CDCECE"
-                android:text="재난분류" />
+                android:text="재난분류"
+                android:fontFamily="@font/kobold"/>
 
             <Button
                 android:id="@+id/region_select"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="지역설정" />
+                android:text="지역설정"
+                android:fontFamily="@font/kobold"/>
 
             <TableLayout
                 android:layout_width="match_parent"
@@ -70,7 +73,8 @@
                         android:id="@+id/textView4"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="위험레벨" />
+                        android:text="위험레벨"
+                        android:fontFamily="@font/kobold" />
                 </TableRow>
 
                 <TableRow
@@ -83,7 +87,8 @@
                         android:layout_height="wrap_content"
                         android:text="Info"
                         android:textOff="Info"
-                        android:textOn="Info" />
+                        android:textOn="Info"
+                        android:fontFamily="@font/kobold"/>
 
                     <ToggleButton
                         android:id="@+id/warning"
@@ -91,7 +96,8 @@
                         android:layout_height="wrap_content"
                         android:text="Warning"
                         android:textOff="Warning"
-                        android:textOn="Warning" />
+                        android:textOn="Warning"
+                        android:fontFamily="@font/kobold"/>
 
                 </TableRow>
 
@@ -106,10 +112,11 @@
                     android:id="@+id/editText4"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_weight="6"
+                    android:layout_weight="5"
                     android:ems="10"
                     android:focusable="false"
                     android:focusableInTouchMode="false"
+                    android:fontFamily="@font/kobold"
                     android:gravity="center"
                     android:inputType="textPersonName"
                     android:text="날짜" />
@@ -118,8 +125,9 @@
                     android:id="@+id/textview_start_date"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
+                    android:layout_weight="2"
                     android:ems="10"
+                    android:fontFamily="@font/kobold"
                     android:gravity="center"
                     android:hint="Start_date" />
 
@@ -127,10 +135,11 @@
                     android:id="@+id/editText3"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_weight="7"
+                    android:layout_weight="6"
                     android:ems="10"
                     android:focusable="false"
                     android:focusableInTouchMode="false"
+                    android:fontFamily="@font/kobold"
                     android:gravity="center"
                     android:inputType="textPersonName"
                     android:text="~" />
@@ -139,8 +148,9 @@
                     android:id="@+id/textview_end_date"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
+                    android:layout_weight="2"
                     android:ems="10"
+                    android:fontFamily="@font/kobold"
                     android:gravity="center"
                     android:hint="End_date" />
 

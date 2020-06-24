@@ -32,6 +32,7 @@
                         android:layout_height="wrap_content"
                         android:gravity="center_horizontal"
                         android:text="선택지역"
+                        android:fontFamily="@font/kobold"
                         android:textSize="36sp"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
@@ -72,6 +73,7 @@
                             android:layout_height="wrap_content"
                             android:gravity="center_horizontal"
                             android:text="시/도"
+                            android:fontFamily="@font/kobold"
                             android:textSize="30sp" />
 
                         <ScrollView
@@ -99,6 +101,7 @@
                             android:layout_height="wrap_content"
                             android:gravity="center_horizontal"
                             android:text="구/군"
+                            android:fontFamily="@font/kobold"
                             android:textSize="30sp" />
 
                         <ScrollView
