@@ -1,4 +1,4 @@
-package com.geovengers.redzone;
+package org.techtown.redzone;
 
 import android.Manifest;
 import android.app.AlertDialog;
@@ -8,6 +8,7 @@ import android.content.pm.PackageManager;
 import android.content.res.AssetManager;
 import android.graphics.Color;
 import android.location.LocationManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MotionEvent;
@@ -17,6 +18,7 @@ import android.widget.ImageButton;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
@@ -86,6 +88,7 @@ public class MainActivity extends AppCompatActivity implements MapView.MapViewEv
     String[] REQUIRED_PERMISSIONS  = {Manifest.permission.ACCESS_FINE_LOCATION};
 
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     protected void onCreate(Bundle savedInstanceState) {    //세로모드 가로모드 전환시에 전역변수 유지하고싶을때
         super.onCreate(savedInstanceState);
@@ -233,8 +236,8 @@ public class MainActivity extends AppCompatActivity implements MapView.MapViewEv
         circleRequest.setDisaster_level(disaster_level);
 
 
-        Button open_button = (Button)findViewById(R.id.open_button);
-        open_button.setOnClickListener(new OnClickListener(){
+        Button menu_button = (Button)findViewById(R.id.menu_button);
+        menu_button.setOnClickListener(new OnClickListener(){
             @Override
             public void onClick(View v) {
                 isNavigation = 1;
@@ -280,7 +283,7 @@ public class MainActivity extends AppCompatActivity implements MapView.MapViewEv
             }
         });
 
-        ImageButton cp_button = (ImageButton)findViewById(R.id.cp_button);
+        Button cp_button = (Button)findViewById(R.id.cp_button);
         cp_button.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
