@@ -1,9 +1,10 @@
-package com.geovengers.redzone;
+package org.techtown.redzone;
 
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
@@ -53,6 +54,7 @@ public class message_list extends AppCompatActivity {
 
         Intent intent = getIntent();
 
+
         if(intent.getExtras().getInt("mode") == 0){
             initMsgRequest[0] = (MsgRequest) intent.getSerializableExtra("msgRequest0");
             initMsgRequest[1] = (MsgRequest) intent.getSerializableExtra("msgRequest1");
@@ -74,6 +76,7 @@ public class message_list extends AppCompatActivity {
         service.getMsgAPI(request).enqueue(new Callback<MsgResponse>() {
             @Override
             public void onResponse(Call<MsgResponse> call, Response<MsgResponse> response) {
+                final Typeface koregular = Typeface.createFromAsset(getAssets(), "fonts/koregular.ttf");
                 if(response.isSuccessful()) {
                     msgResponse = response.body();
                     deleteProgressDialog();
@@ -99,6 +102,7 @@ public class message_list extends AppCompatActivity {
                         btn.setText(temp);
                         btn.setEllipsize(TextUtils.TruncateAt.END);
                         btn.setMaxLines(3);
+                        btn.setTypeface(koregular);
                         btn.setGravity(Gravity.LEFT);
                         linearLayout.addView(btn);
 
@@ -129,6 +133,7 @@ public class message_list extends AppCompatActivity {
                                     btn.setText(temp);
                                     btn.setEllipsize(TextUtils.TruncateAt.END);
                                     btn.setMaxLines(3);
+                                    btn.setTypeface(koregular);;
                                     btn.setGravity(Gravity.LEFT);
                                     linearLayout.addView(btn);
 
@@ -173,6 +178,7 @@ public class message_list extends AppCompatActivity {
             service.getMsgAPI(msgRequest[i]).enqueue(new Callback<MsgResponse>() {
                 @Override
                 public synchronized void onResponse(Call<MsgResponse> call, Response<MsgResponse> response) {
+                    final Typeface koregular = Typeface.createFromAsset(getAssets(), "fonts/koregular.ttf");
                     if (response.isSuccessful()) {
 
                         Log.d("여기는???", "여기도ll");
@@ -224,6 +230,7 @@ public class message_list extends AppCompatActivity {
                                 btn.setText(temp);
                                 btn.setEllipsize(TextUtils.TruncateAt.END);
                                 btn.setMaxLines(3);
+                                btn.setTypeface(koregular);;
                                 btn.setGravity(Gravity.LEFT);
                                 linearLayout.addView(btn);
 
@@ -256,6 +263,7 @@ public class message_list extends AppCompatActivity {
                                             btn.setText(temp);
                                             btn.setEllipsize(TextUtils.TruncateAt.END);
                                             btn.setMaxLines(3);
+                                            btn.setTypeface(koregular);;
                                             btn.setGravity(Gravity.LEFT);
                                             linearLayout.addView(btn);
 
