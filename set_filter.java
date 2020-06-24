@@ -1,6 +1,7 @@
 package com.geovengers.redzone;
 
 import android.content.Intent;
+import android.graphics.Typeface;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
@@ -86,6 +87,7 @@ public class set_filter extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_set_filter);
+        final Typeface koregular = Typeface.createFromAsset(getAssets(), "fonts/koregular.ttf");
 
         start_date = "";
         end_date = "";
@@ -249,14 +251,17 @@ public class set_filter extends AppCompatActivity {
         current_filter_layout.setOrientation(LinearLayout.VERTICAL);
 
         current_region = new TextView(this);
+        current_region.setTypeface(koregular);
         current_region.setText("현재 지역 설정 값 : ");
         current_filter_layout.addView(current_region);
 
         current_disaster_first = new TextView(this);
+        current_disaster_first.setTypeface(koregular);
         current_disaster_first.setText("현재 재난 1차 설정 값 : ");
         current_filter_layout.addView(current_disaster_first);
 
         current_disaster_second = new TextView(this);
+        current_disaster_second.setTypeface(koregular);
         current_disaster_second.setText("현재 재난 2차 설정 값 : ");
         current_filter_layout.addView(current_disaster_second);
 

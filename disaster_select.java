@@ -1,6 +1,7 @@
 package com.geovengers.redzone;
 
 import android.content.Intent;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -45,6 +46,7 @@ public class disaster_select extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_disaster_select);
+        final Typeface koregular = Typeface.createFromAsset(getAssets(), "fonts/koregular.ttf");
 
         layout_all = new LinearLayout(this);
         disaster_list = new ArrayList<>();
@@ -149,6 +151,7 @@ public class disaster_select extends AppCompatActivity {
         final ToggleButton[] button_weather = new ToggleButton[NUM_WEATHER];
         //  전체
         button_weather[0] = new ToggleButton(this);
+        button_weather[0].setTypeface(koregular);
         button_weather[0].setText(name_weather[0]);
         button_weather[0].setTextOn(name_weather[0]);
         button_weather[0].setTextOff(name_weather[0]);
@@ -174,6 +177,7 @@ public class disaster_select extends AppCompatActivity {
 
         for (i = 1; i < NUM_WEATHER; i++) {
             button_weather[i] = new ToggleButton(this);
+            button_weather[i].setTypeface(koregular);
             button_weather[i].setText(name_weather[i]);
             button_weather[i].setTextOn(name_weather[i]);
             button_weather[i].setTextOff(name_weather[i]);
@@ -201,6 +205,7 @@ public class disaster_select extends AppCompatActivity {
         final ToggleButton[] button_disease = new ToggleButton[NUM_DISEASE];
         //  전체
         button_disease[0] = new ToggleButton(this);
+        button_disease[0].setTypeface(koregular);
         button_disease[0].setText(name_disease[0]);
         button_disease[0].setTextOn(name_disease[0]);
         button_disease[0].setTextOff(name_disease[0]);
@@ -226,6 +231,7 @@ public class disaster_select extends AppCompatActivity {
 
         for (i = 1; i < NUM_DISEASE; i++) {
             button_disease[i] = new ToggleButton(this);
+            button_disease[i].setTypeface(koregular);
             button_disease[i].setText(name_disease[i]);
             button_disease[i].setTextOn(name_disease[i]);
             button_disease[i].setTextOff(name_disease[i]);
@@ -253,6 +259,7 @@ public class disaster_select extends AppCompatActivity {
 
         //  전체
         button_other[0] = new ToggleButton(this);
+        button_other[0].setTypeface(koregular);
         button_other[0].setText(name_other[0]);
         button_other[0].setTextOn(name_other[0]);
         button_other[0].setTextOff(name_other[0]);
@@ -278,6 +285,7 @@ public class disaster_select extends AppCompatActivity {
 
         for (i = 1; i < NUM_OTHER; i++) {
             button_other[i] = new ToggleButton(this);
+            button_other[i].setTypeface(koregular);
             button_other[i].setText(name_other[i]);
             button_other[i].setTextOn(name_other[i]);
             button_other[i].setTextOff(name_other[i]);
@@ -300,6 +308,7 @@ public class disaster_select extends AppCompatActivity {
         final ToggleButton[] button_first = new ToggleButton[NUM_FIRST];          //  1차 카테고리 버튼
         for (i = 0; i < NUM_FIRST; i++) {
             button_first[i] = new ToggleButton(this);
+            button_first[i].setTypeface(koregular);
             button_first[i].setTextOn(name_first[i]);
             button_first[i].setTextOff(name_first[i]);
             button_first[i].setChecked(false);

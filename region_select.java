@@ -1,6 +1,7 @@
 package com.geovengers.redzone;
 
 import android.content.Intent;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -132,6 +133,7 @@ public class region_select extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_region_select);
+        final Typeface koregular = Typeface.createFromAsset(getAssets(), "fonts/koregular.ttf");
 
         ImageButton b_reset = (ImageButton) findViewById(R.id.reset);               //  필터 리셋 버튼
         b_reset.setOnClickListener(new Button.OnClickListener() {
@@ -512,6 +514,7 @@ public class region_select extends AppCompatActivity {
         final ToggleButton[] button_seoul = new ToggleButton[NUM_SEOUL];
         for (i = 0; i < NUM_SEOUL; i++) {
             button_seoul[i] = new ToggleButton(this);
+            button_seoul[i].setTypeface(koregular);
             button_seoul[i].setText(code_seoul[i]);
             button_seoul[i].setTextOn(name_seoul[i]);
             button_seoul[i].setTextOff(name_seoul[i]);
@@ -542,6 +545,7 @@ public class region_select extends AppCompatActivity {
         final ToggleButton[] button_pusan = new ToggleButton[NUM_PUSAN];
         for (i = 0; i < NUM_PUSAN; i++) {
             button_pusan[i] = new ToggleButton(this);
+            button_pusan[i].setTypeface(koregular);
             button_pusan[i].setTextOn(name_pusan[i]);
             button_pusan[i].setTextOff(name_pusan[i]);
             button_pusan[i].setText(code_pusan[i]);
@@ -572,6 +576,7 @@ public class region_select extends AppCompatActivity {
         final ToggleButton[] button_daegu = new ToggleButton[NUM_DAEGU];
         for (i = 0; i < NUM_DAEGU; i++) {
             button_daegu[i] = new ToggleButton(this);
+            button_daegu[i].setTypeface(koregular);
             button_daegu[i].setTextOn(name_daegu[i]);
             button_daegu[i].setTextOff(name_daegu[i]);
             button_daegu[i].setText(code_daegu[i]);
@@ -602,6 +607,7 @@ public class region_select extends AppCompatActivity {
         final ToggleButton[] button_incheon = new ToggleButton[NUM_INCHEON];
         for (i = 0; i < NUM_INCHEON; i++) {
             button_incheon[i] = new ToggleButton(this);
+            button_incheon[i].setTypeface(koregular);
             button_incheon[i].setTextOn(name_incheon[i]);
             button_incheon[i].setTextOff(name_incheon[i]);
             button_incheon[i].setText(code_incheon[i]);
@@ -631,6 +637,7 @@ public class region_select extends AppCompatActivity {
         final ToggleButton[] button_gwangju = new ToggleButton[NUM_GWANGJU];
         for (i = 0; i < NUM_GWANGJU; i++) {
             button_gwangju[i] = new ToggleButton(this);
+            button_gwangju[i].setTypeface(koregular);
             button_gwangju[i].setTextOn(name_gwangju[i]);
             button_gwangju[i].setTextOff(name_gwangju[i]);
             button_gwangju[i].setText(code_gwangju[i]);
@@ -660,6 +667,7 @@ public class region_select extends AppCompatActivity {
         final ToggleButton[] button_daejeon = new ToggleButton[NUM_DAEJEON];
         for (i = 0; i < NUM_DAEJEON; i++) {
             button_daejeon[i] = new ToggleButton(this);
+            button_daejeon[i].setTypeface(koregular);
             button_daejeon[i].setTextOn(name_daejeon[i]);
             button_daejeon[i].setTextOff(name_daejeon[i]);
             button_daejeon[i].setText(code_daejeon[i]);
@@ -689,6 +697,7 @@ public class region_select extends AppCompatActivity {
         final ToggleButton[] button_ulsan = new ToggleButton[NUM_ULSAN];
         for (i = 0; i < NUM_ULSAN; i++) {
             button_ulsan[i] = new ToggleButton(this);
+            button_ulsan[i].setTypeface(koregular);
             button_ulsan[i].setTextOn(name_ulsan[i]);
             button_ulsan[i].setTextOff(name_ulsan[i]);
             button_ulsan[i].setText(code_ulsan[i]);
@@ -718,6 +727,7 @@ public class region_select extends AppCompatActivity {
         final ToggleButton[] button_sejong = new ToggleButton[NUM_SEJONG];
         for (i = 0; i < NUM_SEJONG; i++) {
             button_sejong[i] = new ToggleButton(this);
+            button_sejong[i].setTypeface(koregular);
             button_sejong[i].setTextOn(name_sejong[i]);
             button_sejong[i].setTextOff(name_sejong[i]);
             button_sejong[i].setText(code_sejong[i]);
@@ -747,6 +757,7 @@ public class region_select extends AppCompatActivity {
         final ToggleButton[] button_gyeonggi = new ToggleButton[NUM_GYEONGGI];
         for (i = 0; i < NUM_GYEONGGI; i++) {
             button_gyeonggi[i] = new ToggleButton(this);
+            button_gyeonggi[i].setTypeface(koregular);
             button_gyeonggi[i].setTextOn(name_gyeonggi[i]);
             button_gyeonggi[i].setTextOff(name_gyeonggi[i]);
             button_gyeonggi[i].setText(code_gyeonggi[i]);
@@ -776,6 +787,7 @@ public class region_select extends AppCompatActivity {
         final ToggleButton[] button_gangwon = new ToggleButton[NUM_GANGWON];
         for (i = 0; i < NUM_GANGWON; i++) {
             button_gangwon[i] = new ToggleButton(this);
+            button_gangwon[i].setTypeface(koregular);
             button_gangwon[i].setTextOn(name_gangwon[i]);
             button_gangwon[i].setTextOff(name_gangwon[i]);
             button_gangwon[i].setText(code_gangwon[i]);
@@ -805,6 +817,7 @@ public class region_select extends AppCompatActivity {
         final ToggleButton[] button_chungbuk = new ToggleButton[NUM_CHUNGBUK];
         for (i = 0; i < NUM_CHUNGBUK; i++) {
             button_chungbuk[i] = new ToggleButton(this);
+            button_chungbuk[i].setTypeface(koregular);
             button_chungbuk[i].setTextOn(name_chungbuk[i]);
             button_chungbuk[i].setTextOff(name_chungbuk[i]);
             button_chungbuk[i].setText(code_chungbuk[i]);
@@ -834,6 +847,7 @@ public class region_select extends AppCompatActivity {
         final ToggleButton[] button_chungnam = new ToggleButton[NUM_CHUNGNAM];
         for (i = 0; i < NUM_CHUNGNAM; i++) {
             button_chungnam[i] = new ToggleButton(this);
+            button_chungnam[i].setTypeface(koregular);
             button_chungnam[i].setTextOn(name_chungnam[i]);
             button_chungnam[i].setTextOff(name_chungnam[i]);
             button_chungnam[i].setText(code_chungnam[i]);
@@ -863,6 +877,7 @@ public class region_select extends AppCompatActivity {
         final ToggleButton[] button_jeonbuk = new ToggleButton[NUM_JEONBUK];
         for (i = 0; i < NUM_JEONBUK; i++) {
             button_jeonbuk[i] = new ToggleButton(this);
+            button_jeonbuk[i].setTypeface(koregular);
             button_jeonbuk[i].setTextOn(name_jeonbuk[i]);
             button_jeonbuk[i].setTextOff(name_jeonbuk[i]);
             button_jeonbuk[i].setText(code_jeonbuk[i]);
@@ -892,6 +907,7 @@ public class region_select extends AppCompatActivity {
         final ToggleButton[] button_jeonnam = new ToggleButton[NUM_JEONNAM];
         for (i = 0; i < NUM_JEONNAM; i++) {
             button_jeonnam[i] = new ToggleButton(this);
+            button_jeonnam[i].setTypeface(koregular);
             button_jeonnam[i].setTextOn(name_jeonnam[i]);
             button_jeonnam[i].setTextOff(name_jeonnam[i]);
             button_jeonnam[i].setText(code_jeonnam[i]);
@@ -921,6 +937,7 @@ public class region_select extends AppCompatActivity {
         final ToggleButton[] button_gyeongbuk = new ToggleButton[NUM_GYEONGBUK];
         for (i = 0; i < NUM_GYEONGBUK; i++) {
             button_gyeongbuk[i] = new ToggleButton(this);
+            button_gyeongbuk[i].setTypeface(koregular);
             button_gyeongbuk[i].setTextOn(name_gyeongbuk[i]);
             button_gyeongbuk[i].setTextOff(name_gyeongbuk[i]);
             button_gyeongbuk[i].setText(code_gyeongbuk[i]);
@@ -950,6 +967,7 @@ public class region_select extends AppCompatActivity {
         final ToggleButton[] button_gyeongnam = new ToggleButton[NUM_GYEONGNAM];
         for (i = 0; i < NUM_GYEONGNAM; i++) {
             button_gyeongnam[i] = new ToggleButton(this);
+            button_gyeongnam[i].setTypeface(koregular);
             button_gyeongnam[i].setTextOn(name_gyeongnam[i]);
             button_gyeongnam[i].setTextOff(name_gyeongnam[i]);
             button_gyeongnam[i].setText(code_gyeongnam[i]);
@@ -981,6 +999,7 @@ public class region_select extends AppCompatActivity {
         final ToggleButton[] button_jeju = new ToggleButton[NUM_JEJU];
         for (i = 0; i < NUM_JEJU; i++) {
             button_jeju[i] = new ToggleButton(this);
+            button_jeju[i].setTypeface(koregular);
             button_jeju[i].setTextOn(name_jeju[i]);
             button_jeju[i].setTextOff(name_jeju[i]);
             button_jeju[i].setText(code_jeju[i]);
@@ -1008,6 +1027,7 @@ public class region_select extends AppCompatActivity {
         //  1차지역 버튼들을 화면 좌측(1차지역 레이아웃)에 삽입
         for (i = 0; i < num_first; i++) {
             button_first[i] = new ToggleButton(this);
+            button_first[i].setTypeface(koregular);
             button_first[i].setTextOn(name_first[i]);
             button_first[i].setTextOff(name_first[i]);
             button_first[i].setChecked(false);
