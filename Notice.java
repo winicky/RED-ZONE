@@ -23,11 +23,11 @@ public class Notice extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_notice);
 
-        noticeTitle.add("Version 1.0 릴리즈 안내");
-        noticeContent.add("Version 1.0 최초 배포 되었습니다.");
+        noticeTitle.add("[업데이트] Ver1.0 릴리즈 업데이트 안내");
+        noticeContent.add("ver1.0 릴리즈\n지도 위 각 버튼 UI가 개선\npiechart activity내 UI가 개선\n각 activity 내 폰트 적용\nNavigation bar 내 기능 구현");
 
-        noticeTitle.add("서버스 중단 안내");
-        noticeContent.add("aws server 구입 비 부족으로 인한 서버스 중단 안내");
+        noticeTitle.add("[업데이트] ver1.1 릴리즈 업데이트 안내");
+        noticeContent.add("filter activity 내 UI 개선\n filter activity 내 도움말 기능 추가");
 
         LinearLayout linearLayout = findViewById(R.id.linearLayoutNotice);
 
@@ -36,13 +36,15 @@ public class Notice extends Activity {
             final String tempContent = noticeContent.get(i);
             Button btn = new Button(getBaseContext());
             btn.setId(i);
-            btn.setGravity(Gravity.CENTER);
+            //btn.setGravity(Gravity.CENTER);
             btn.setText(tempTitle);
-            btn.setTextSize(30);
-            btn.setHeight(180);
+            btn.setTextSize(20);
+            btn.setHeight(100);
+            btn.setPaddingRelative(20,0,0,0);
             btn.setBackgroundResource(R.drawable.notice_curved_rect);
             btn.setEllipsize(TextUtils.TruncateAt.END);
-            //btn.setGravity(Gravity.LEFT);
+            btn.setGravity(Gravity.LEFT);
+            btn.setGravity(Gravity.CENTER_VERTICAL);
             btn.setTypeface(maplelight);
             linearLayout.addView(btn);
 
