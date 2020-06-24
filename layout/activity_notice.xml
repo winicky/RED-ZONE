@@ -12,8 +12,9 @@
         android:layout_height="104dp"
         android:background="#fafafa"
         android:fontFamily="@font/maplelight"
-        android:gravity="center_horizontal"
+        android:gravity="center_horizontal|left"
         android:paddingTop="20dp"
+        android:paddingLeft="30dp"
         android:text="공지사항"
         android:textSize="50sp" />
 
